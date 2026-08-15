@@ -62,3 +62,12 @@ SupabaseService.fetchTable error (programmes): ClientException: Failed to fetch,
 AdminSupabaseClient.select error (academic_years): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/academic_years?select=%2A&order=start_date.desc.nullslast
 SupabaseService.fetchTable error (subjects): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/subjects?select=%2A
 SupabaseService.fetchTable error (programme_subject_mappings): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/programme_subject_mappings?select=%2A
+Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.
+supabase.supabase_flutter: INFO: ***** Supabase init completed ***** 
+AdminSupabaseClient.select error (academic_years): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/academic_years?select=%2A&order=start_date.desc.nullslast
+SupabaseService.fetchTable error (programmes): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/programmes?select=%2A
+SupabaseService.fetchTable error (users): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/users?select=%2A
+SupabaseService.fetchTable error (departments): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/departments?select=%2A
+AdminSupabaseClient.select error (academic_years): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/academic_years?select=%2A
+SupabaseService.fetchTable error (subjects): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/subjects?select=%2A
+SupabaseService.fetchTable error (programme_subject_mappings): ClientException: Failed to fetch, uri=https://your-project-url.supabase.co/rest/v1/programme_subject_mappings?select=%2A
