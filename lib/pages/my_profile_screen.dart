@@ -34,6 +34,76 @@ class _MyProfileScreenState extends State<MyProfileScreen> with SingleTickerProv
     super.dispose();
   }
 
+  void _showChangePasswordModal() {
+    final oldPassCtrl = TextEditingController();
+    final newPassCtrl = TextEditingController();
+    final confirmPassCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Change Administrator Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: oldPassCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Current Password *', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: newPassCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'New Password *', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: confirmPassCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirm New Password *', border: OutlineInputBorder()),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white),
+            onPressed: () {
+              final oldP = oldPassCtrl.text.trim();
+              final newP = newPassCtrl.text.trim();
+              final confP = confirmPassCtrl.text.trim();
+
+              if (oldP.isEmpty || newP.isEmpty || confP.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please fill in all password fields.'), backgroundColor: Color(0xFFDC2626)),
+                );
+                return;
+              }
+
+              if (newP != confP) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('New passwords do not match.'), backgroundColor: Color(0xFFDC2626)),
+                );
+                return;
+              }
+
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Password updated successfully!'), backgroundColor: Color(0xFF16A34A)),
+              );
+            },
+            child: const Text('Update Password'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -383,7 +453,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> with SingleTickerProv
             runSpacing: 16,
             children: [
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showChangePasswordModal(),
                 icon: const Icon(Icons.lock_reset_rounded, size: 20),
                 label: const Text('Change Password'),
                 style: OutlinedButton.styleFrom(

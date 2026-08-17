@@ -34,6 +34,84 @@ class _TransportManagementScreenState
     }
   }
 
+  void _showAddRouteModal() {
+    final rNoCtrl = TextEditingController(text: 'R-${_routes.length + 1}');
+    final rNameCtrl = TextEditingController();
+    final driverCtrl = TextEditingController();
+    final busCtrl = TextEditingController(text: 'TN 28 AB 1001');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Add New Bus Route', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        content: SizedBox(
+          width: 440,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: rNoCtrl,
+                      decoration: const InputDecoration(labelText: 'Route No *', border: OutlineInputBorder()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: busCtrl,
+                      decoration: const InputDecoration(labelText: 'Bus Vehicle No', border: OutlineInputBorder()),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: rNameCtrl,
+                decoration: const InputDecoration(labelText: 'Route Coverage / Stops *', hintText: 'e.g. Salem -> Erode -> Campus', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: driverCtrl,
+                decoration: const InputDecoration(labelText: 'Driver Name', border: OutlineInputBorder()),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white),
+            onPressed: () async {
+              if (rNameCtrl.text.trim().isEmpty) return;
+              Navigator.pop(ctx);
+              await CampusServicesBackend.instance.addTransportRoute({
+                'name': rNameCtrl.text.trim(),
+                'code': rNoCtrl.text.trim(),
+                'route_no': rNoCtrl.text.trim(),
+                'route_name': rNameCtrl.text.trim(),
+                'driver_name': driverCtrl.text.trim().isNotEmpty ? driverCtrl.text.trim() : 'M. Periasamy',
+                'bus_no': busCtrl.text.trim(),
+                'seating_capacity': 50,
+                'students_assigned': 42,
+                'status': 'Active',
+              });
+              _loadRoutes();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Transport route added successfully!'), backgroundColor: AppColors.success),
+                );
+              }
+            },
+            child: const Text('Save Route'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +148,7 @@ class _TransportManagementScreenState
                 AppButton(
                   label: 'Add Bus Route',
                   icon: Icons.directions_bus_rounded,
-                  onPressed: () {},
+                  onPressed: () => _showAddRouteModal(),
                 ),
               ],
             ),

@@ -42,7 +42,7 @@ class _AcademicConfigScreenState extends ConsumerState<AcademicConfigScreen>
     setState(() => _loading = true);
     try {
       final years = await AdminSupabaseClient.select('academic_years',
-          schema: 'admin', orderBy: 'start_date', ascending: false);
+          orderBy: 'start_date', ascending: false);
       if (mounted) {
         setState(() {
           _masterYears = years;
@@ -69,11 +69,10 @@ class _AcademicConfigScreenState extends ConsumerState<AcademicConfigScreen>
     setState(() => _loading = true);
     try {
       final cycles =
-          await AdminSupabaseClient.select('academic_cycles', schema: 'admin');
-      final batches = await AdminSupabaseClient.select('enrollment_batches',
-          schema: 'admin');
+          await AdminSupabaseClient.select('academic_cycles');
+      final batches = await AdminSupabaseClient.select('enrollment_batches');
       final milestones =
-          await AdminSupabaseClient.select('term_milestones', schema: 'admin');
+          await AdminSupabaseClient.select('term_milestones');
 
       if (mounted) {
         setState(() {

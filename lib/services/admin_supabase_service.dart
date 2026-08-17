@@ -101,6 +101,17 @@ class AdminSupabaseService {
     }
   }
 
+  static Future<Map<String, dynamic>?> addMeeting(
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      return await SupabaseService.instance.insertData('meetings', data);
+    } catch (e) {
+      print('Error adding meeting: $e');
+      return null;
+    }
+  }
+
   /// Fetch audit log entries.
   static Future<List<Map<String, dynamic>>> fetchAuditEntries() async {
     try {

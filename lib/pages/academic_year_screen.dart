@@ -28,7 +28,6 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
       // Note: The original orderBy and ascending parameters are not supported by the helper.
       final data = await AdminSupabaseClient.select(
         'academic_years',
-        schema: 'admin',
       );
       if (mounted) {
         setState(() {
@@ -171,7 +170,6 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
           },
           'id',
           yId,
-          schema: 'admin',
         );
       }
     }
@@ -181,7 +179,6 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
       {'is_active': true, 'status': 'Active'},
       'id',
       id,
-      schema: 'admin',
     );
     _showSnack(
       'Academic year "${item['year_label']}" is now set as the active session across ERP modules.',
@@ -408,9 +405,7 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
                   'year_label': label,
                   'start_date': start,
                   'end_date': end,
-                  'admission_status': admissionStatus,
-                  'status': status,
-                  'notes': notesCtrl.text.trim(),
+                  'is_current': false,
                 };
 
                 if (isEdit && existing['id'] != null) {
@@ -419,15 +414,12 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
                     payload,
                     'id',
                     existing['id'].toString(),
-                    schema: 'admin',
                   );
                   _showSnack('Academic year "$label" updated successfully.');
                 } else {
-                  payload['is_active'] = false;
                   await AdminSupabaseClient.insert(
                     'academic_years',
                     payload,
-                    schema: 'admin',
                   );
                   _showSnack('Academic year "$label" created successfully.');
                 }
@@ -628,7 +620,6 @@ class _AcademicYearScreenState extends ConsumerState<AcademicYearScreen> {
                   {'status': 'Archived', 'is_active': false},
                   'id',
                   id,
-                  schema: 'admin',
                 );
                 _showSnack('Academic year "$yearLabel" archived successfully.');
                 _loadData();

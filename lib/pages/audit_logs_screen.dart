@@ -28,7 +28,10 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
   List<Map<String, dynamic>> get _filtered {
     var list = _logs;
     if (_searchQuery.isNotEmpty) list = list.where((l) => jsonEncode(l).toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-    if (_severityFilter != 'All') list = list.where((l) => (l['severity'] ?? '').toLowerCase() == _severityFilter.toLowerCase()).toList();
+    if (_severityFilter != 'All') {
+      final levelFilter = _severityFilter == 'Critical' ? 'ERROR' : _severityFilter == 'Warning' ? 'WARN' : 'INFO';
+      list = list.where((l) => (l['level'] ?? 'INFO') == levelFilter).toList();
+    }
     return list;
   }
 
@@ -53,7 +56,14 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
         ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white), onPressed: () async {
           Navigator.pop(ctx);
-          await AdminSupabaseService.addAuditEntry({'action': actionCtrl.text.trim(), 'actor_name': userCtrl.text.trim(), 'resource': resourceCtrl.text.trim(), 'severity': severity, 'created_at': DateTime.now().toIso8601String()});
+          await AdminSupabaseService.addAuditEntry({
+            'description': actionCtrl.text.trim().isNotEmpty
+                ? '${actionCtrl.text.trim()} on ${resourceCtrl.text.trim()}'
+                : 'Admin action performed',
+            'operator_name': userCtrl.text.trim().isNotEmpty ? userCtrl.text.trim() : 'Admin System',
+            'level': severity == 'Critical' ? 'ERROR' : severity == 'Warning' ? 'WARN' : 'INFO',
+            'timestamp': DateTime.now().toIso8601String(),
+          });
           _loadData();
         }, child: const Text('Add')),
       ],
@@ -62,7 +72,7 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
 
   Future<void> _delete(Map<String, dynamic> log) async {
     final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(title: const Text('Delete Entry?'), content: const Text('Remove this audit log entry?'), actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white), onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))]));
-    if (ok == true) { await AdminSupabaseService.deleteAuditEntry(log['id'] as String); _loadData(); }
+    if (ok == true && log['id'] != null) { await AdminSupabaseService.deleteAuditEntry(log['id'].toString()); _loadData(); }
   }
 
   @override
@@ -85,11 +95,11 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
       Row(children: [
         _stat('Total Events', '${_logs.length}', Icons.receipt_long_rounded, const Color(0xFF0052CC)),
         const SizedBox(width: 12),
-        _stat('Critical', '${_logs.where((l) => (l['severity'] ?? '') == 'Critical').length}', Icons.error_rounded, const Color(0xFFDC2626)),
+        _stat('Critical', '${_logs.where((l) => (l['level'] ?? '') == 'ERROR').length}', Icons.error_rounded, const Color(0xFFDC2626)),
         const SizedBox(width: 12),
-        _stat('Warnings', '${_logs.where((l) => (l['severity'] ?? '') == 'Warning').length}', Icons.warning_rounded, const Color(0xFFD97706)),
+        _stat('Warnings', '${_logs.where((l) => (l['level'] ?? '') == 'WARN').length}', Icons.warning_rounded, const Color(0xFFD97706)),
         const SizedBox(width: 12),
-        _stat('Info', '${_logs.where((l) => (l['severity'] ?? '') == 'Informational').length}', Icons.info_rounded, const Color(0xFF16A34A)),
+        _stat('Info', '${_logs.where((l) => (l['level'] ?? '') == 'INFO').length}', Icons.info_rounded, const Color(0xFF16A34A)),
       ]),
       const SizedBox(height: 20),
       Row(children: [
@@ -101,14 +111,15 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
       if (_loading) const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()))
       else Container(decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))), child: filtered.isEmpty ? const Center(child: Padding(padding: EdgeInsets.all(40), child: Column(children: [Icon(Icons.receipt_long_rounded, size: 64, color: Color(0xFFCBD5E1)), SizedBox(height: 12), Text('No audit logs found', style: TextStyle(color: Color(0xFF64748B)))])))
       : SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)), columnSpacing: 16, columns: const [DataColumn(label: Text('Time', style: TextStyle(fontWeight: FontWeight.bold))), DataColumn(label: Text('User', style: TextStyle(fontWeight: FontWeight.bold))), DataColumn(label: Text('Action', style: TextStyle(fontWeight: FontWeight.bold))), DataColumn(label: Text('Resource', style: TextStyle(fontWeight: FontWeight.bold))), DataColumn(label: Text('Severity', style: TextStyle(fontWeight: FontWeight.bold))), DataColumn(label: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold)))], rows: filtered.take(100).map((l) {
-        final sev = l['severity'] ?? 'Informational';
-        final sevColor = sev == 'Critical' ? const Color(0xFFDC2626) : sev == 'Warning' ? const Color(0xFFD97706) : const Color(0xFF16A34A);
-        final ts = l['created_at'] ?? '';
+        final level = l['level'] ?? 'INFO';
+        final sev = level == 'ERROR' ? 'Critical' : level == 'WARN' ? 'Warning' : 'Informational';
+        final sevColor = level == 'ERROR' ? const Color(0xFFDC2626) : level == 'WARN' ? const Color(0xFFD97706) : const Color(0xFF16A34A);
+        final ts = l['timestamp']?.toString() ?? '';
         return DataRow(cells: [
           DataCell(Text(ts.length > 16 ? ts.substring(0, 16).replaceAll('T', ' ') : ts, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)))),
-          DataCell(Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text(l['actor_name'] ?? l['user'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)), Text(l['actor_role'] ?? l['user_role'] ?? '', style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)))])),
-          DataCell(Text(l['action'] ?? '-', style: const TextStyle(fontSize: 13))),
-          DataCell(Text(l['resource'] ?? l['entity_type'] ?? '-', style: const TextStyle(fontSize: 13))),
+          DataCell(Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [Text(l['operator_name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)), Text('Admin', style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)))])),
+          DataCell(Text(l['description'] ?? '-', style: const TextStyle(fontSize: 13))),
+          DataCell(Text(l['level'] ?? 'INFO', style: const TextStyle(fontSize: 13))),
           DataCell(Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: sevColor.withAlpha(25), borderRadius: BorderRadius.circular(12)), child: Text(sev, style: TextStyle(color: sevColor, fontWeight: FontWeight.bold, fontSize: 12)))),
           DataCell(Row(children: [IconButton(icon: const Icon(Icons.copy_rounded, size: 16, color: Color(0xFF64748B)), onPressed: () => Clipboard.setData(ClipboardData(text: jsonEncode(l)))), IconButton(icon: const Icon(Icons.delete_outline_rounded, size: 16, color: Color(0xFFDC2626)), onPressed: () => _delete(l))])),
         ]);

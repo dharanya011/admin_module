@@ -34,6 +34,99 @@ class _PlacementManagementScreenState
     }
   }
 
+  void _showAddDriveModal() {
+    final compCtrl = TextEditingController();
+    final roleCtrl = TextEditingController(text: 'Software Development Engineer');
+    final ctcCtrl = TextEditingController(text: '₹ 8.5 LPA');
+    final deptCtrl = TextEditingController(text: 'CSE, IT, ECE');
+    final dateCtrl = TextEditingController(text: DateTime.now().add(const Duration(days: 14)).toIso8601String().split('T')[0]);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('New Placement Drive Announcement', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        content: SizedBox(
+          width: 440,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: compCtrl,
+                decoration: const InputDecoration(labelText: 'Company Name *', hintText: 'e.g. Zoho Corporation', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: roleCtrl,
+                      decoration: const InputDecoration(labelText: 'Job Role', border: OutlineInputBorder()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: ctcCtrl,
+                      decoration: const InputDecoration(labelText: 'Package CTC', border: OutlineInputBorder()),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: deptCtrl,
+                      decoration: const InputDecoration(labelText: 'Eligible Departments', border: OutlineInputBorder()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: dateCtrl,
+                      decoration: const InputDecoration(labelText: 'Drive Date (YYYY-MM-DD)', border: OutlineInputBorder()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white),
+            onPressed: () async {
+              if (compCtrl.text.trim().isEmpty) return;
+              Navigator.pop(ctx);
+              await CampusServicesBackend.instance.addPlacementDrive({
+                'title': 'Placement Drive — ${compCtrl.text.trim()}',
+                'company_name': compCtrl.text.trim(),
+                'role': roleCtrl.text.trim(),
+                'package': ctcCtrl.text.trim(),
+                'eligible_depts': deptCtrl.text.trim(),
+                'drive_date': dateCtrl.text.trim(),
+                'status': 'Scheduled',
+                'category': 'Placement',
+                'target_audience': 'Final Year Students',
+                'published_at': DateTime.now().toIso8601String(),
+              });
+              _loadDrives();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Placement drive announcement posted successfully!'), backgroundColor: AppColors.success),
+                );
+              }
+            },
+            child: const Text('Post Announcement'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +163,7 @@ class _PlacementManagementScreenState
                 AppButton(
                   label: 'New Drive Announcement',
                   icon: Icons.work_rounded,
-                  onPressed: () {},
+                  onPressed: () => _showAddDriveModal(),
                 ),
               ],
             ),

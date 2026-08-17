@@ -33,6 +33,84 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
     }
   }
 
+  void _showAddBookModal() {
+    final titleCtrl = TextEditingController();
+    final sizeCtrl = TextEditingController(text: '4.5 MB');
+    final byCtrl = TextEditingController(text: 'Library Admin');
+    String formatVal = 'PDF';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('Add New Book / E-Book Resource', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          content: SizedBox(
+            width: 440,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleCtrl,
+                  decoration: const InputDecoration(labelText: 'Book / Resource Title *', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: formatVal,
+                        decoration: const InputDecoration(labelText: 'File Format', border: OutlineInputBorder()),
+                        items: ['PDF', 'EPUB', 'DOCX'].map((f) => DropdownMenuItem(value: f, child: Text(f))).toList(),
+                        onChanged: (v) => setModalState(() => formatVal = v!),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: sizeCtrl,
+                        decoration: const InputDecoration(labelText: 'File Size', border: OutlineInputBorder()),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: byCtrl,
+                  decoration: const InputDecoration(labelText: 'Uploaded By / Publisher', border: OutlineInputBorder()),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white),
+              onPressed: () async {
+                if (titleCtrl.text.trim().isEmpty) return;
+                Navigator.pop(ctx);
+                await CampusServicesBackend.instance.addLibraryResource({
+                  'file_name': titleCtrl.text.trim(),
+                  'file_type': formatVal,
+                  'file_size': sizeCtrl.text.trim(),
+                  'uploaded_by': byCtrl.text.trim(),
+                  'uploaded_at': DateTime.now().toIso8601String(),
+                });
+                _loadResources();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('E-Book resource added successfully!'), backgroundColor: AppColors.success),
+                  );
+                }
+              },
+              child: const Text('Add Resource'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,13 +148,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                 AppButton(
                   label: 'Add New Book / E-Book',
                   icon: Icons.add_rounded,
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Add Resource Form Opened'),
-                      ),
-                    );
-                  },
+                  onPressed: () => _showAddBookModal(),
                 ),
               ],
             ),

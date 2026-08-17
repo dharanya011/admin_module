@@ -32,6 +32,87 @@ class _HostelManagementScreenState extends State<HostelManagementScreen> {
     }
   }
 
+  void _showAddAllocationModal() {
+    final nameCtrl = TextEditingController();
+    final wardenCtrl = TextEditingController(text: 'Dr. R. Sundaram');
+    final capCtrl = TextEditingController(text: '200');
+    final resCtrl = TextEditingController(text: '150');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Add Hostel Block / Room Allocation', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        content: SizedBox(
+          width: 440,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                decoration: const InputDecoration(labelText: 'Block Name (e.g. Kaveri Block) *', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: wardenCtrl,
+                decoration: const InputDecoration(labelText: 'Warden Name', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: capCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Total Capacity', border: OutlineInputBorder()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: resCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Current Residents', border: OutlineInputBorder()),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white),
+            onPressed: () async {
+              if (nameCtrl.text.trim().isEmpty) return;
+              Navigator.pop(ctx);
+              final cap = int.tryParse(capCtrl.text.trim()) ?? 200;
+              final res = int.tryParse(resCtrl.text.trim()) ?? 150;
+              await CampusServicesBackend.instance.addHostelAllocation({
+                'batch_name': nameCtrl.text.trim(),
+                'block_name': nameCtrl.text.trim(),
+                'warden': wardenCtrl.text.trim(),
+                'capacity': cap,
+                'current_residents': res,
+                'occupied_rooms': (res / 2).round(),
+                'total_rooms': (cap / 2).round(),
+                'academic_year': '2026-2027',
+              });
+              _loadHostels();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Hostel room allocation saved successfully!'), backgroundColor: AppColors.success),
+                );
+              }
+            },
+            child: const Text('Save Allocation'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +149,7 @@ class _HostelManagementScreenState extends State<HostelManagementScreen> {
                 AppButton(
                   label: 'New Room Allocation',
                   icon: Icons.add_home_rounded,
-                  onPressed: () {},
+                  onPressed: () => _showAddAllocationModal(),
                 ),
               ],
             ),
@@ -134,8 +215,9 @@ class _HostelManagementScreenState extends State<HostelManagementScreen> {
   }
 
   Widget _buildBlockItem(Map<String, dynamic> block) {
-    final double occupancyRate =
-        (block['current_residents'] as int) / (block['capacity'] as int);
+    final cap = int.tryParse(block['capacity']?.toString() ?? '') ?? 200;
+    final cur = int.tryParse(block['current_residents']?.toString() ?? block['students_count']?.toString() ?? '') ?? 150;
+    final double occupancyRate = cap > 0 ? (cur / cap).clamp(0.0, 1.0) : 0.75;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),

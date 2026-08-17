@@ -189,7 +189,7 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
                     items: [
                       const DropdownMenuItem<String?>(child: Text('No Folder (Root)')),
                       ..._folders.map((f) => DropdownMenuItem<String?>(
-                            value: f['id'] as String,
+                            value: f['id']?.toString(),
                             child: Text(f['name'] ?? 'Untitled Folder'),
                           )),
                     ],
@@ -284,7 +284,7 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
 
   Future<void> _deleteDoc(Map<String, dynamic> doc) async {
     final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(title: const Text('Delete Document?'), content: Text('Delete "${doc['title']}"?'), actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white), onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))]));
-    if (ok == true) { await AdminSupabaseService.deleteRepositoryDocument(doc['id'] as String); _loadData(); }
+    if (ok == true && doc['id'] != null) { await AdminSupabaseService.deleteRepositoryDocument(doc['id'].toString()); _loadData(); }
   }
 
   @override
@@ -429,7 +429,7 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
               const SizedBox(height: 12),
               Wrap(spacing: 10, runSpacing: 10, children: [
                 GestureDetector(onTap: () => setState(() { _selectedFolderId = null; _loadData(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), decoration: BoxDecoration(color: _selectedFolderId == null ? const Color(0xFF0052CC) : Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF0052CC))), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.folder_open_rounded, size: 16, color: _selectedFolderId == null ? Colors.white : const Color(0xFF0052CC)), const SizedBox(width: 6), Text('All Documents', style: TextStyle(fontWeight: FontWeight.bold, color: _selectedFolderId == null ? Colors.white : const Color(0xFF0052CC)))]))),
-                ..._folders.map((f) => GestureDetector(onTap: () => setState(() { _selectedFolderId = f['id'] as String?; _loadData(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), decoration: BoxDecoration(color: _selectedFolderId == f['id'] ? const Color(0xFF0052CC) : Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF0052CC))), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.folder_rounded, size: 16, color: _selectedFolderId == f['id'] ? Colors.white : const Color(0xFFD97706)), const SizedBox(width: 6), Text(f['name'] ?? 'Folder', style: TextStyle(fontWeight: FontWeight.bold, color: _selectedFolderId == f['id'] ? Colors.white : const Color(0xFF334155)))]))))
+                ..._folders.map((f) => GestureDetector(onTap: () => setState(() { _selectedFolderId = f['id']?.toString(); _loadData(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), decoration: BoxDecoration(color: _selectedFolderId == f['id']?.toString() ? const Color(0xFF0052CC) : Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFF0052CC))), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.folder_rounded, size: 16, color: _selectedFolderId == f['id']?.toString() ? Colors.white : const Color(0xFFD97706)), const SizedBox(width: 6), Text(f['name'] ?? 'Folder', style: TextStyle(fontWeight: FontWeight.bold, color: _selectedFolderId == f['id']?.toString() ? Colors.white : const Color(0xFF334155)))]))))
               ]),
               const SizedBox(height: 20),
             ],

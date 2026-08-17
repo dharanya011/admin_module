@@ -22,7 +22,7 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
     if (mounted) setState(() { _requests = data; _loading = false; });
   }
 
-  List<Map<String, dynamic>> get _filtered => _filter == 'All' ? _requests : _requests.where((r) => (r['decision'] ?? 'pending').toLowerCase() == _filter.toLowerCase()).toList();
+  List<Map<String, dynamic>> get _filtered => _filter == 'All' ? _requests : _requests.where((r) => (r['status'] ?? 'Pending').toLowerCase() == _filter.toLowerCase()).toList();
 
   void _showAddModal() {
     final titleCtrl = TextEditingController();
@@ -50,7 +50,13 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
         TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
         ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white), onPressed: () async {
           Navigator.pop(ctx);
-          await AdminSupabaseService.addApprovalRequest({'title': titleCtrl.text.trim(), 'requester_name': reqCtrl.text.trim(), 'summary': sumCtrl.text.trim(), 'category': category, 'priority': priority, 'decision': 'pending', 'requester_role': 'Admin', 'submitted_at': DateTime.now().toIso8601String()});
+          await AdminSupabaseService.addApprovalRequest({
+            'request_title': titleCtrl.text.trim().isNotEmpty ? titleCtrl.text.trim() : 'New Request',
+            'requested_by': reqCtrl.text.trim().isNotEmpty ? reqCtrl.text.trim() : 'Admin',
+            'module': category,
+            'status': 'Pending',
+            'submitted_date': DateTime.now().toIso8601String(),
+          });
           _loadData();
         }, child: const Text('Submit')),
       ],
@@ -58,13 +64,15 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
   }
 
   Future<void> _updateDecision(Map<String, dynamic> req, String decision) async {
-    await AdminSupabaseService.updateApprovalRequest(req['id'] as String, {'decision': decision});
-    _loadData();
+    if (req['id'] != null) {
+      await AdminSupabaseService.updateApprovalRequest(req['id'].toString(), {'status': decision});
+      _loadData();
+    }
   }
 
   Future<void> _delete(Map<String, dynamic> req) async {
     final ok = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(title: const Text('Delete?'), content: Text('Delete "${req['title']}"?'), actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white), onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))]));
-    if (ok == true) { await AdminSupabaseService.deleteApprovalRequest(req['id'] as String); _loadData(); }
+    if (ok == true && req['id'] != null) { await AdminSupabaseService.deleteApprovalRequest(req['id'].toString()); _loadData(); }
   }
 
   @override
@@ -89,38 +97,35 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
         Row(children: [
           _stat('Total', '${_requests.length}', Icons.inbox_rounded, const Color(0xFF0052CC)),
           const SizedBox(width: 12),
-          _stat('Pending', '${_requests.where((r) => (r['decision'] ?? 'pending') == 'pending').length}', Icons.pending_rounded, const Color(0xFFD97706)),
+          _stat('Pending', '${_requests.where((r) => (r['status'] ?? 'Pending') == 'Pending').length}', Icons.pending_rounded, const Color(0xFFD97706)),
           const SizedBox(width: 12),
-          _stat('Approved', '${_requests.where((r) => r['decision'] == 'approved').length}', Icons.check_circle_rounded, const Color(0xFF16A34A)),
+          _stat('Approved', '${_requests.where((r) => r['status'] == 'Approved').length}', Icons.check_circle_rounded, const Color(0xFF16A34A)),
           const SizedBox(width: 12),
-          _stat('Rejected', '${_requests.where((r) => r['decision'] == 'rejected').length}', Icons.cancel_rounded, const Color(0xFFDC2626)),
+          _stat('Rejected', '${_requests.where((r) => r['status'] == 'Rejected').length}', Icons.cancel_rounded, const Color(0xFFDC2626)),
         ]),
         const SizedBox(height: 20),
         Wrap(spacing: 8, children: ['All','pending','approved','rejected'].map((f) => ChoiceChip(label: Text(f[0].toUpperCase() + f.substring(1)), selected: _filter == f, onSelected: (_) => setState(() => _filter = f), selectedColor: const Color(0xFF0052CC), labelStyle: TextStyle(color: _filter == f ? Colors.white : const Color(0xFF64748B)))).toList()),
         const SizedBox(height: 20),
         if (_loading) const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator())) else if (filtered.isEmpty) const Center(child: Padding(padding: EdgeInsets.all(40), child: Column(children: [Icon(Icons.inbox_rounded, size: 64, color: Color(0xFFCBD5E1)), SizedBox(height: 12), Text('No approval requests found', style: TextStyle(color: Color(0xFF64748B), fontSize: 16))]))) else ListView.separated(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: filtered.length, separatorBuilder: (_, __) => const SizedBox(height: 12), itemBuilder: (ctx, i) {
           final r = filtered[i];
-          final decision = r['decision'] ?? 'pending';
+          final decision = (r['status'] ?? 'Pending').toLowerCase();
           final decisionColor = decision == 'approved' ? const Color(0xFF16A34A) : decision == 'rejected' ? const Color(0xFFDC2626) : const Color(0xFFD97706);
           return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(r['title'] ?? 'Untitled', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
+                Text(r['request_title'] ?? r['title'] ?? 'Untitled', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
                 const SizedBox(height: 4),
-                Row(children: [const Icon(Icons.person_outline_rounded, size: 14, color: Color(0xFF64748B)), const SizedBox(width: 4), Text('${r['requester_name'] ?? '-'} · ${r['requester_role'] ?? '-'}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)))]),
+                Row(children: [const Icon(Icons.person_outline_rounded, size: 14, color: Color(0xFF64748B)), const SizedBox(width: 4), Text('${r['requested_by'] ?? r['requester_name'] ?? '-'}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)))]),
               ])),
-              Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: decisionColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Text(decision.toUpperCase(), style: TextStyle(color: decisionColor, fontWeight: FontWeight.bold, fontSize: 12))),
+              Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: decisionColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)), child: Text((r['status'] ?? 'Pending').toUpperCase(), style: TextStyle(color: decisionColor, fontWeight: FontWeight.bold, fontSize: 12))),
             ]),
-            if ((r['summary'] ?? '').isNotEmpty) ...[const SizedBox(height: 8), Text(r['summary'] ?? '', style: const TextStyle(fontSize: 13, color: Color(0xFF475569)))],
             const SizedBox(height: 12),
             Row(children: [
-              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(8)), child: Text(r['category'] ?? '-', style: const TextStyle(fontSize: 11, color: Color(0xFF475569)))),
-              const SizedBox(width: 8),
-              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: const Color(0xFFFFF7ED), borderRadius: BorderRadius.circular(8)), child: Text('Priority: ${r['priority'] ?? '-'}', style: const TextStyle(fontSize: 11, color: Color(0xFFD97706)))),
+              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(8)), child: Text(r['module'] ?? r['category'] ?? '-', style: const TextStyle(fontSize: 11, color: Color(0xFF475569)))),
               const Spacer(),
               if (decision == 'pending') ...[
-                TextButton(onPressed: () => _updateDecision(r, 'approved'), child: const Text('Approve', style: TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.bold))),
-                TextButton(onPressed: () => _updateDecision(r, 'rejected'), child: const Text('Reject', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold))),
+                TextButton(onPressed: () => _updateDecision(r, 'Approved'), child: const Text('Approve', style: TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.bold))),
+                TextButton(onPressed: () => _updateDecision(r, 'Rejected'), child: const Text('Reject', style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold))),
               ],
               IconButton(icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFDC2626)), onPressed: () => _delete(r)),
             ]),

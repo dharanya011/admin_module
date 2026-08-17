@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
 import '../widgets/app_card.dart';
 import '../widgets/app_status_badge.dart';
+import '../services/programme_subject_service.dart';
+
 class ProgrammesScreen extends ConsumerStatefulWidget {
   const ProgrammesScreen({super.key});
 
@@ -15,15 +17,6 @@ class _ProgrammesScreenState extends ConsumerState<ProgrammesScreen> {
   String _searchQuery = '';
   List<Map<String, dynamic>> _data = [];
   bool _loading = true;
-
-  final List<Map<String, dynamic>> _fallbackData = [
-    {'code': 'B.E. CSE', 'name': 'Computer Science & Engineering', 'degree': 'UG', 'years': 4, 'intake': 180, 'dept': 'CSE', 'status': 'Active'},
-    {'code': 'B.Tech IT', 'name': 'Information Technology', 'degree': 'UG', 'years': 4, 'intake': 120, 'dept': 'IT', 'status': 'Active'},
-    {'code': 'B.E. ECE', 'name': 'Electronics & Communication Engg.', 'degree': 'UG', 'years': 4, 'intake': 120, 'dept': 'ECE', 'status': 'Active'},
-    {'code': 'B.Tech AI & DS', 'name': 'Artificial Intelligence & Data Science', 'degree': 'UG', 'years': 4, 'intake': 120, 'dept': 'CSE', 'status': 'Active'},
-    {'code': 'M.E. CSE', 'name': 'Computer Science (PG)', 'degree': 'PG', 'years': 2, 'intake': 18, 'dept': 'CSE', 'status': 'Active'},
-    {'code': 'M.Tech VLSI', 'name': 'VLSI Design & Embedded Systems', 'degree': 'PG', 'years': 2, 'intake': 18, 'dept': 'ECE', 'status': 'Active'},
-  ];
 
   @override
   void initState() {
@@ -40,25 +33,26 @@ class _ProgrammesScreenState extends ConsumerState<ProgrammesScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final result = <Map<String, dynamic>>[];
+      final result = await ProgrammeSubjectService.fetchProgrammes();
       if (result.isNotEmpty) {
         setState(() {
-          _data = result.map((e) => {
-            'code': e['code'] ?? '',
-            'name': e['name'] ?? '',
-            'degree': e['degree'] ?? 'UG',
+          _data = result.map((e) => <String, dynamic>{
+            'id': e['id']?.toString(),
+            'code': e['code']?.toString() ?? '',
+            'name': e['name']?.toString() ?? '',
+            'degree': e['degree']?.toString() ?? 'UG',
             'years': e['duration_years'] ?? e['duration'] ?? e['years'] ?? 4,
             'intake': e['intake_seats'] ?? e['intake'] ?? 60,
-            'dept': e['department'] ?? e['department_code'] ?? e['dept'] ?? '',
-            'status': e['status'] ?? 'Active',
+            'dept': e['department']?.toString() ?? e['department_code']?.toString() ?? e['dept']?.toString() ?? '',
+            'status': e['status']?.toString() ?? 'Active',
           }).toList();
           _loading = false;
         });
       } else {
-        setState(() { _data = List.from(_fallbackData); _loading = false; });
+        setState(() { _data = []; _loading = false; });
       }
     } catch (_) {
-      setState(() { _data = List.from(_fallbackData); _loading = false; });
+      setState(() { _data = []; _loading = false; });
     }
   }
 
@@ -151,34 +145,34 @@ class _ProgrammesScreenState extends ConsumerState<ProgrammesScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       if (nameCtrl.text.isNotEmpty && codeCtrl.text.isNotEmpty) {
-                        setState(() {
-                          if (editItem != null) {
-                            editItem['name'] = nameCtrl.text;
-                            editItem['code'] = codeCtrl.text;
-                            editItem['intake'] = int.tryParse(intakeCtrl.text) ?? 60;
-                            editItem['degree'] = degreeVal;
-                            editItem['dept'] = deptVal;
-                          } else {
-                            _data.add({
-                              'code': codeCtrl.text,
-                              'name': nameCtrl.text,
-                              'degree': degreeVal,
-                              'years': degreeVal == 'UG' ? 4 : 2,
-                              'intake': int.tryParse(intakeCtrl.text) ?? 60,
-                              'dept': deptVal,
-                              'status': 'Active',
-                            });
-                          }
-                        });
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(editItem != null ? 'Programme updated successfully!' : 'Programme added successfully!'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
+                        final payload = {
+                          'code': codeCtrl.text.trim(),
+                          'name': nameCtrl.text.trim(),
+                          'duration': degreeVal == 'UG' ? '4 Years' : '2 Years',
+                          'status': 'Active',
+                        };
+
+                        if (editItem != null && editItem['id'] != null) {
+                          await ProgrammeSubjectService.updateProgramme(
+                            editItem['id'].toString(),
+                            payload,
+                          );
+                        } else {
+                          await ProgrammeSubjectService.createProgramme(payload);
+                        }
+
+                        if (mounted) {
+                          Navigator.pop(context);
+                          _loadData();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(editItem != null ? 'Programme updated successfully!' : 'Programme added successfully!'),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        }
                       }
                     },
                     icon: const Icon(Icons.check_circle_outline_rounded),

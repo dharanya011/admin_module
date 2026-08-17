@@ -364,15 +364,11 @@ class FacultyAttendanceNotifier
   Future<void> addRecord(FacultyAttendanceRecord record) async {
     state = [record, ...state];
     await AdminSupabaseService.addFacultyAttendance({
-      'faculty_name': record.facultyName,
-      'employee_id': record.employeeId,
-      'department': record.department,
-      'designation': record.designation,
+      'faculty_id': record.employeeId.isNotEmpty ? record.employeeId : record.facultyName,
       'date': record.date,
       'status': record.status,
-      'check_in': record.checkIn,
-      'check_out': record.checkOut,
-      'attendance_percentage': record.attendancePercentage,
+      'check_in': record.checkIn.isNotEmpty ? record.checkIn : null,
+      'check_out': record.checkOut.isNotEmpty ? record.checkOut : null,
     });
     loadData();
   }
@@ -382,17 +378,18 @@ class FacultyAttendanceNotifier
       for (final r in state)
         if (r.id == record.id) record else r,
     ];
-    await AdminSupabaseService.updateFacultyAttendance(record.id, {
-      'faculty_name': record.facultyName,
-      'employee_id': record.employeeId,
-      'department': record.department,
-      'designation': record.designation,
+    final payload = {
+      'faculty_id': record.employeeId.isNotEmpty ? record.employeeId : record.facultyName,
       'date': record.date,
       'status': record.status,
-      'check_in': record.checkIn,
-      'check_out': record.checkOut,
-      'attendance_percentage': record.attendancePercentage,
-    });
+      'check_in': record.checkIn.isNotEmpty ? record.checkIn : null,
+      'check_out': record.checkOut.isNotEmpty ? record.checkOut : null,
+    };
+    if (record.id.startsWith('FAC_ATT_')) {
+      await AdminSupabaseService.addFacultyAttendance(payload);
+    } else {
+      await AdminSupabaseService.updateFacultyAttendance(record.id, payload);
+    }
     loadData();
   }
 
