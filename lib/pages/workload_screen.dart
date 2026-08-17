@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
 import '../widgets/app_card.dart';
+import '../services/faculty_service.dart';
 class WorkloadScreen extends ConsumerStatefulWidget {
   const WorkloadScreen({super.key});
 
@@ -13,13 +14,6 @@ class _WorkloadScreenState extends ConsumerState<WorkloadScreen> {
   List<Map<String, dynamic>> _data = [];
   bool _loading = true;
 
-  final List<Map<String, dynamic>> _fallbackData = [
-    {'name': 'Dr. Suresh Kumar', 'dept': 'CSE', 'hoursPerWeek': 16, 'subjectsAssigned': 3, 'labsAssigned': 2, 'loadStatus': 'Optimal'},
-    {'name': 'Dr. R. Maheshwari', 'dept': 'ECE', 'hoursPerWeek': 18, 'subjectsAssigned': 4, 'labsAssigned': 1, 'loadStatus': 'Optimal'},
-    {'name': 'Dr. V. Priya', 'dept': 'IT', 'hoursPerWeek': 14, 'subjectsAssigned': 3, 'labsAssigned': 1, 'loadStatus': 'Light'},
-    {'name': 'Dr. K. Balaji', 'dept': 'IoT', 'hoursPerWeek': 20, 'subjectsAssigned': 4, 'labsAssigned': 3, 'loadStatus': 'Heavy'},
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -29,24 +23,24 @@ class _WorkloadScreenState extends ConsumerState<WorkloadScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final result = <Map<String, dynamic>>[];
+      final result = await FacultyService.fetchFaculty();
       if (result.isNotEmpty) {
         setState(() {
-          _data = result.map((e) => {
-            'name': e['faculty_name'] ?? e['name'] ?? '',
-            'dept': e['department'] ?? e['dept'] ?? '',
-            'hoursPerWeek': e['hours_per_week'] ?? e['hoursPerWeek'] ?? 0,
-            'subjectsAssigned': e['subjects_assigned'] ?? e['subjectsAssigned'] ?? 1,
-            'labsAssigned': e['labs_assigned'] ?? e['labsAssigned'] ?? 0,
-            'loadStatus': e['load_status'] ?? e['loadStatus'] ?? 'Optimal',
+          _data = result.map((e) => <String, dynamic>{
+            'name': e['name']?.toString() ?? e['faculty_name']?.toString() ?? '',
+            'dept': e['department_code']?.toString() ?? e['department']?.toString() ?? '',
+            'hoursPerWeek': e['hours_per_week'] ?? 16,
+            'subjectsAssigned': e['subjects_assigned'] ?? 3,
+            'labsAssigned': e['labs_assigned'] ?? 1,
+            'loadStatus': e['load_status']?.toString() ?? 'Optimal',
           }).toList();
           _loading = false;
         });
       } else {
-        setState(() { _data = List.from(_fallbackData); _loading = false; });
+        setState(() { _data = []; _loading = false; });
       }
     } catch (_) {
-      setState(() { _data = List.from(_fallbackData); _loading = false; });
+      setState(() { _data = []; _loading = false; });
     }
   }
 

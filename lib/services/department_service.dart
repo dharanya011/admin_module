@@ -2,28 +2,39 @@ import '../shared/services/supabase_service.dart';
 
 class DepartmentService {
   static Future<List<Map<String, dynamic>>> fetchDepartments() async {
-    final departments = await SupabaseService.instance.fetchTable(
-      'departments',
-    );
-    return departments.isNotEmpty ? departments : _fallbackDepartments();
+    try {
+      final departments = await SupabaseService.instance.fetchTable('departments');
+      return departments;
+    } catch (e) {
+      print('Error fetching departments: $e');
+      return [];
+    }
   }
 
-  static List<Map<String, dynamic>> _fallbackDepartments() => [
-      {
-        'code': 'CSE',
-        'name': 'Computer Science & Engineering',
-        'hod_name': 'Dr. Suresh Kumar',
-        'student_count': 720,
-        'faculty_count': 42,
-        'status': 'Active',
-      },
-      {
-        'code': 'IT',
-        'name': 'Information Technology',
-        'hod_name': 'Dr. V. Priya',
-        'student_count': 480,
-        'faculty_count': 28,
-        'status': 'Active',
-      },
-    ];
+  static Future<Map<String, dynamic>?> createDepartment(Map<String, dynamic> data) async {
+    try {
+      return await SupabaseService.instance.insertData('departments', data);
+    } catch (e) {
+      print('Error creating department: $e');
+      return null;
+    }
+  }
+
+  static Future<bool> updateDepartment(String id, Map<String, dynamic> data) async {
+    try {
+      return await SupabaseService.instance.updateData('departments', data, id);
+    } catch (e) {
+      print('Error updating department: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteDepartment(String id) async {
+    try {
+      return await SupabaseService.instance.deleteData('departments', id);
+    } catch (e) {
+      print('Error deleting department: $e');
+      return false;
+    }
+  }
 }

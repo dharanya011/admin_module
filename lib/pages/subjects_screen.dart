@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
 import '../widgets/app_card.dart';
+import '../services/programme_subject_service.dart';
 class SubjectsScreen extends ConsumerStatefulWidget {
   const SubjectsScreen({super.key});
 
@@ -14,15 +15,6 @@ class _SubjectsScreenState extends ConsumerState<SubjectsScreen> {
   String _searchQuery = '';
   List<Map<String, dynamic>> _data = [];
   bool _loading = true;
-
-  final List<Map<String, dynamic>> _fallbackData = [
-    {'code': 'CS3401', 'name': 'Data Structures & Algorithms', 'credits': 4, 'type': 'Theory', 'dept': 'CSE'},
-    {'code': 'CS3402', 'name': 'Database Management Systems', 'credits': 4, 'type': 'Theory + Lab', 'dept': 'CSE'},
-    {'code': 'CS3403', 'name': 'Operating Systems Internal', 'credits': 3, 'type': 'Theory', 'dept': 'CSE'},
-    {'code': 'IT3501', 'name': 'Full Stack Web Architecture', 'credits': 4, 'type': 'Theory + Lab', 'dept': 'IT'},
-    {'code': 'EC3301', 'name': 'Digital Signal Processing', 'credits': 4, 'type': 'Theory', 'dept': 'ECE'},
-    {'code': 'AI3601', 'name': 'Machine Learning Algorithms', 'credits': 4, 'type': 'Theory + Lab', 'dept': 'CSE'},
-  ];
 
   @override
   void initState() {
@@ -39,23 +31,23 @@ class _SubjectsScreenState extends ConsumerState<SubjectsScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final result = <Map<String, dynamic>>[];
+      final result = await ProgrammeSubjectService.fetchSubjects();
       if (result.isNotEmpty) {
         setState(() {
-          _data = result.map((e) => {
-            'code': e['code'] ?? '',
-            'name': e['name'] ?? '',
+          _data = result.map((e) => <String, dynamic>{
+            'code': e['code']?.toString() ?? '',
+            'name': e['name']?.toString() ?? '',
             'credits': e['credits'] ?? 3,
-            'type': e['type'] ?? 'Theory',
-            'dept': e['department'] ?? e['department_code'] ?? e['dept'] ?? '',
+            'type': e['type']?.toString() ?? 'Theory',
+            'dept': e['department']?.toString() ?? e['department_code']?.toString() ?? '',
           }).toList();
           _loading = false;
         });
       } else {
-        setState(() { _data = List.from(_fallbackData); _loading = false; });
+        setState(() { _data = []; _loading = false; });
       }
     } catch (_) {
-      setState(() { _data = List.from(_fallbackData); _loading = false; });
+      setState(() { _data = []; _loading = false; });
     }
   }
 

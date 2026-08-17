@@ -25,6 +25,7 @@ class AdminApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Admin Portal',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
       ),

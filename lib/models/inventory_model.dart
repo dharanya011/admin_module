@@ -32,4 +32,16 @@ class InventoryModel {
       status: data['status'] ?? 'In Stock',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id.isNotEmpty && id != '0' && id != '1' && id != '2' && id != '3') 'id': id,
+      'item_name': itemName,
+      'category': category,
+      'location': location,
+      'quantity': quantity,
+      'purchase_date': purchaseDate.toIso8601String(),
+      'status': status,
+    };
+  }
 }

@@ -4,13 +4,10 @@ import '../shared/services/supabase_service.dart';
 class RegulationService {
   static Future<List<Map<String, dynamic>>> fetchRegulations() async {
     try {
-      final regulations = await SupabaseService.instance.fetchTable(
-        'regulations',
-      );
-      return regulations.isNotEmpty ? regulations : _fallbackRegulations();
+      return await SupabaseService.instance.fetchTable('regulations');
     } catch (e) {
       debugPrint('Error fetching regulations: $e');
-      return _fallbackRegulations();
+      return [];
     }
   }
 
@@ -33,14 +30,13 @@ class RegulationService {
     String academicYear,
   ) async {
     try {
-      final regulations = await SupabaseService.instance.fetchTable(
+      return await SupabaseService.instance.fetchTable(
         'regulations',
         filter: 'academic_year.eq.$academicYear',
       );
-      return regulations.isNotEmpty ? regulations : _fallbackRegulations();
     } catch (e) {
       debugPrint('Error fetching regulations for year: $e');
-      return _fallbackRegulations();
+      return [];
     }
   }
 
@@ -86,25 +82,4 @@ class RegulationService {
       return false;
     }
   }
-
-  static List<Map<String, dynamic>> _fallbackRegulations() => [
-      {
-        'id': 'reg-001',
-        'code': 'R2023',
-        'name': 'Regulation 2023',
-        'academic_year': '2023-2024',
-        'min_attendance': 75,
-        'min_passing_marks': 40,
-        'status': 'Active',
-      },
-      {
-        'id': 'reg-002',
-        'code': 'R2024',
-        'name': 'Regulation 2024',
-        'academic_year': '2024-2025',
-        'min_attendance': 75,
-        'min_passing_marks': 40,
-        'status': 'Active',
-      },
-    ];
 }

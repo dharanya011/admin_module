@@ -104,16 +104,12 @@ class RouteNames {
   static const String transport = '/admin/transport';
   static const String placement = '/admin/placement';
   static const String eventManagement = '/admin/events';
-  static const String inventoryAssets =
-      '/admin/inventory-assets'; // 34. Inventory & Assets [⭐ New]
-  static const String grievanceManagement =
-      '/admin/grievances'; // 33. Grievance Management [⭐ New]
+  static const String inventoryAssets ='/admin/inventory-assets'; // 34. Inventory & Assets [⭐ New]
+  static const String grievanceManagement ='/admin/grievances'; // 33. Grievance Management [⭐ New]
 
   // 7. Communication
-  static const String notificationManagement =
-      '/admin/notifications'; // 24. Notification Management
-  static const String digitalRepository =
-      '/admin/digital-repository'; // 31. Digital Repository [⭐ New]
+  static const String notificationManagement ='/admin/notifications'; // 24. Notification Management
+  static const String digitalRepository ='/admin/digital-repository'; // 31. Digital Repository [⭐ New]
 
   // 8. Reports
   static const String reports = '/admin/reports'; // 25. Reports & Analytics

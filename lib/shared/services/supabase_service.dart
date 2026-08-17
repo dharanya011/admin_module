@@ -67,12 +67,22 @@ class SupabaseService {
     Map<String, dynamic> data,
   ) async {
     try {
+      final cleanData = Map<String, dynamic>.from(data);
+      if (cleanData.containsKey('id')) {
+        final idVal = cleanData['id']?.toString() ?? '';
+        final isUuid = RegExp(
+          r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+        ).hasMatch(idVal);
+        if (!isUuid) {
+          cleanData.remove('id');
+        }
+      }
       final result = await client
           .from(tableName)
-          .insert(data)
+          .insert(cleanData)
           .select()
-          .single();
-      return Map<String, dynamic>.from(result);
+          .maybeSingle();
+      return result != null ? Map<String, dynamic>.from(result) : cleanData;
     } catch (e) {
       debugPrint('SupabaseService.insertData error ($tableName): $e');
       return null;

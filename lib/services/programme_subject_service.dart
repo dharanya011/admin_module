@@ -3,23 +3,19 @@ import '../shared/services/supabase_service.dart';
 class ProgrammeSubjectService {
   static Future<List<Map<String, dynamic>>> fetchProgrammes() async {
     try {
-      final programmes = await SupabaseService.instance.fetchTable(
-        'programmes',
-      );
-      return programmes.isNotEmpty ? programmes : _fallbackProgrammes();
+      return await SupabaseService.instance.fetchTable('programmes');
     } catch (e) {
       print('Error fetching programmes: $e');
-      return _fallbackProgrammes();
+      return [];
     }
   }
 
   static Future<List<Map<String, dynamic>>> fetchSubjects() async {
     try {
-      final subjects = await SupabaseService.instance.fetchTable('subjects');
-      return subjects.isNotEmpty ? subjects : _fallbackSubjects();
+      return await SupabaseService.instance.fetchTable('subjects');
     } catch (e) {
       print('Error fetching subjects: $e');
-      return _fallbackSubjects();
+      return [];
     }
   }
 
@@ -191,10 +187,10 @@ class ProgrammeSubjectService {
         'subjects',
         filter: 'programme_id.eq.$programmeId',
       );
-      return subjects.isNotEmpty ? subjects : _fallbackSubjects();
+      return subjects;
     } catch (e) {
       print('Error fetching subjects for programme: $e');
-      return _fallbackSubjects();
+      return [];
     }
   }
 
@@ -221,40 +217,4 @@ class ProgrammeSubjectService {
       return false;
     }
   }
-
-  static List<Map<String, dynamic>> _fallbackProgrammes() => [
-      {
-        'id': 'prog-001',
-        'name': 'B.Tech CSE',
-        'code': 'BTECH-CSE',
-        'duration': '4 Years',
-        'status': 'Active',
-      },
-      {
-        'id': 'prog-002',
-        'name': 'B.Tech IT',
-        'code': 'BTECH-IT',
-        'duration': '4 Years',
-        'status': 'Active',
-      },
-    ];
-
-  static List<Map<String, dynamic>> _fallbackSubjects() => [
-      {
-        'id': 'subj-001',
-        'code': 'CS101',
-        'name': 'Programming in C',
-        'credits': 4,
-        'semester': 1,
-        'status': 'Active',
-      },
-      {
-        'id': 'subj-002',
-        'code': 'CS102',
-        'name': 'Data Structures',
-        'credits': 4,
-        'semester': 2,
-        'status': 'Active',
-      },
-    ];
 }

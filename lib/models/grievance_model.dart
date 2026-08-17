@@ -35,4 +35,17 @@ class GrievanceModel {
       assignedTo: data['assignedTo'] ?? data['assigned_to'] ?? 'Unassigned',
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id.isNotEmpty && id != '0' && id != '1' && id != '2' && id != '3') 'id': id,
+      'grievance_id': grievanceId,
+      'submitted_by': submittedBy,
+      'category': category,
+      'details': details,
+      'submission_date': submissionDate.toIso8601String(),
+      'status': status,
+      'assigned_to': assignedTo,
+    };
+  }
 }

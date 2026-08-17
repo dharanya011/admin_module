@@ -801,99 +801,81 @@ class _GlobalSearchDialogState extends State<_GlobalSearchDialog> {
     final filtered = _computeResults();
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 580, maxHeight: 560),
-        padding: const EdgeInsets.all(16),
+        constraints: const BoxConstraints(maxWidth: 540, maxHeight: 580),
+        decoration: BoxDecoration(
+          color: const Color(0xFFECEFF4),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText:
-                    'Search for students, faculty, courses, departments...',
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  color: Color(0xFF0052CC),
-                ),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_query.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.clear_rounded, size: 18),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _query = '');
-                        },
-                      ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                filled: true,
-                fillColor: const Color(0xFFF1F5F9),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+            // Search Input Header Field
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(14),
               ),
-              onChanged: (val) {
-                setState(() => _query = val);
-              },
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _query.isEmpty
-                      ? 'QUICK NAVIGATION'
-                      : 'SEARCH RESULTS (${filtered.length})',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF64748B),
-                    letterSpacing: 0.5,
-                  ),
+              child: TextField(
+                controller: _controller,
+                autofocus: true,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF0F172A),
                 ),
-                if (_isLoading)
-                  const Row(
+                decoration: InputDecoration(
+                  hintText: 'Search for students, faculty, courses...',
+                  hintStyle: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF94A3B8),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF0052CC),
+                    size: 20,
+                  ),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.8,
-                          color: Color(0xFF0052CC),
+                      if (_query.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.clear_rounded, size: 18),
+                          onPressed: () {
+                            _controller.clear();
+                            setState(() => _query = '');
+                          },
                         ),
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Syncing live DB...',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF94A3B8),
-                        ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 20, color: Color(0xFF64748B)),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
-                  )
-                else if (_query.isNotEmpty)
-                  const Text(
-                    'Live Database Results',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF10B981),
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
-              ],
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+                onChanged: (val) {
+                  setState(() => _query = val);
+                },
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+
+            // Search Results List
             Expanded(
               child: filtered.isEmpty
                   ? Center(
@@ -907,18 +889,10 @@ class _GlobalSearchDialogState extends State<_GlobalSearchDialog> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'No matching items found for "$_query"',
+                            'No matching pages found for "$_query"',
                             style: const TextStyle(
                               color: Color(0xFF64748B),
                               fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Try searching by student name, faculty, department, or subject code',
-                            style: TextStyle(
-                              color: Color(0xFF94A3B8),
-                              fontSize: 11,
                             ),
                           ),
                         ],
@@ -931,73 +905,66 @@ class _GlobalSearchDialogState extends State<_GlobalSearchDialog> {
                         final item = filtered[index];
                         final icon = (item['icon'] as IconData?) ??
                             Icons.grid_view_rounded;
-                        final iconColor = (item['color'] as Color?) ??
-                            const Color(0xFF0052CC);
                         final title = item['title'] as String;
                         final category = item['category'] as String;
-                        final subtitle = item['subtitle'] as String?;
+                        final route = item['route'] as String;
 
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 2,
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.02),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: iconColor.withAlpha(30),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(icon, color: iconColor, size: 20),
-                          ),
-                          title: Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
-                              fontSize: 13,
-                            ),
-                          ),
-                          subtitle: subtitle != null && subtitle.isNotEmpty
-                              ? Text(
-                                  subtitle,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF64748B),
-                                  ),
-                                )
-                              : Text(
-                                  category,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF64748B),
-                                  ),
-                                ),
-                          trailing: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
                               vertical: 4,
                             ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              category,
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: iconColor,
+                            leading: Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                icon,
+                                color: const Color(0xFF0052CC),
+                                size: 20,
                               ),
                             ),
+                            title: Text(
+                              title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F172A),
+                                fontSize: 13.5,
+                              ),
+                            ),
+                            subtitle: Text(
+                              category,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF94A3B8),
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.chevron_right_rounded,
+                              color: Color(0xFF94A3B8),
+                              size: 20,
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              context.go(route);
+                            },
                           ),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            context.go(item['route'] as String);
-                          },
                         );
                       },
                     ),

@@ -7,6 +7,10 @@ import '../models/misc_models.dart';
 import '../models/academic_schedule_model.dart';
 
 import '../services/department_service.dart';
+import '../services/programme_subject_service.dart';
+import '../services/regulation_service.dart';
+import '../services/admin_supabase_service.dart';
+import '../shared/services/supabase_service.dart';
 
 export '../models/user_model.dart';
 export '../models/department_model.dart';
@@ -15,25 +19,8 @@ export '../models/regulation_model.dart';
 export '../models/misc_models.dart';
 export '../models/academic_schedule_model.dart';
 
-final List<UserModel> _initialUsers = [];
-final List<DepartmentModel> _initialDepartments = [];
-final List<CourseModel> _initialCourses = [];
-final List<SubjectModel> _initialSubjects = [];
-final List<RegulationModel> _initialRegulations = [];
-final List<AcademicCycleModel> _initialAcademicCycles = [];
-final List<AuditLogModel> _initialAuditLogs = [];
-final List<ReportModel> _initialReports = [];
-final List<MedicalAlertModel> _initialMedicalAlerts = [];
-final List<EventModel> _initialEvents = [];
-final List<AcademicEventModel> _initialAcademicEvents = [];
-final List<HolidayModel> _initialHolidays = [];
-final List<AcademicMilestoneModel> _initialMilestones = [];
-const AcademicScheduleDocModel? _initialScheduleDoc = null;
-
-// Notifiers and Providers
-
+// ── 1. Users Notifier ────────────────────────────────────────────────────────
 class UsersNotifier extends StateNotifier<List<UserModel>> {
-
   UsersNotifier([List<UserModel>? initial]) : super(initial ?? []) {
     loadUsersFromSupabase();
   }
@@ -44,28 +31,91 @@ class UsersNotifier extends StateNotifier<List<UserModel>> {
   Future<void> loadUsersFromSupabase() async {
     isLoading = true;
     errorMessage = null;
-    state = [];
-    state = _initialUsers;
-    isConnectedToSupabase = false;
-    isLoading = false;
+    try {
+      final rawList = await SupabaseService.instance.fetchTable('users');
+      if (rawList.isNotEmpty) {
+        state = rawList.map((m) => UserModel.fromSupabaseJson(m)).toList();
+        isConnectedToSupabase = true;
+      } else {
+        final stList = await SupabaseService.instance.fetchTable('students');
+        if (stList.isNotEmpty) {
+          state = stList.map((st) => UserModel(
+            id: st['id']?.toString() ?? '',
+            name: st['name']?.toString() ?? '',
+            email: '${st['roll_number'] ?? 'student'}@ksrce.ac.in',
+            role: 'Student',
+            department: st['department_code']?.toString() ?? 'CSE',
+            node: 'Active Node',
+            status: st['status']?.toString() ?? 'Active',
+            rollNumber: st['roll_number']?.toString(),
+            admissionNumber: st['admission_number']?.toString(),
+            batch: st['batch']?.toString(),
+            section: st['section']?.toString(),
+          )).toList();
+          isConnectedToSupabase = true;
+        } else {
+          state = [];
+        }
+      }
+    } catch (e) {
+      print('Error loading users from Supabase: $e');
+      state = [];
+    } finally {
+      isLoading = false;
+    }
   }
 
   Future<void> addUser(UserModel user) async {
     isLoading = true;
     errorMessage = null;
-    state = [user, ...state];
-    isLoading = false;
+    try {
+      final payload = user.toSupabaseJson();
+      final inserted = await SupabaseService.instance.insertData('users', payload);
+      if (inserted != null) {
+        final insertedUser = UserModel.fromSupabaseJson(inserted);
+        state = [insertedUser, ...state.where((u) => u.id != user.id)];
+      } else {
+        state = [user, ...state];
+      }
+
+      if (user.role == 'Student') {
+        await SupabaseService.instance.insertData('students', {
+          'name': user.name,
+          'roll_number': user.rollNumber ?? user.admissionNumber ?? user.id,
+          'admission_number': user.admissionNumber ?? user.rollNumber,
+          'department_code': user.department,
+          'batch': user.batch ?? '2022-2026',
+          'section': user.section ?? 'A',
+          'status': user.status,
+        });
+      }
+    } catch (e) {
+      print('Error adding user to Supabase: $e');
+    } finally {
+      isLoading = false;
+    }
   }
 
   Future<void> updateUser(UserModel user) async {
-    state = [
-      for (final u in state)
-        if (u.id == user.id) user else u,
-    ];
+    try {
+      final payload = user.toSupabaseJson();
+      await SupabaseService.instance.updateData('users', payload, user.id);
+      state = [
+        for (final u in state)
+          if (u.id == user.id) user else u,
+      ];
+    } catch (e) {
+      print('Error updating user in Supabase: $e');
+    }
   }
 
   Future<void> deleteUser(String id) async {
-    state = state.where((u) => u.id != id).toList();
+    try {
+      await SupabaseService.instance.deleteData('users', id);
+      state = state.where((u) => u.id != id).toList();
+    } catch (e) {
+      print('Error deleting user from Supabase: $e');
+    }
   }
 }
 
@@ -73,9 +123,9 @@ final usersProvider = StateNotifierProvider<UsersNotifier, List<UserModel>>((
   ref,
 ) => UsersNotifier());
 
+// ── 2. Departments Notifier ──────────────────────────────────────────────────
 class DepartmentsNotifier extends StateNotifier<List<DepartmentModel>> {
-  DepartmentsNotifier([List<DepartmentModel>? initial])
-    : super(initial ?? _initialDepartments) {
+  DepartmentsNotifier([List<DepartmentModel>? initial]) : super(initial ?? []) {
     loadDepartments();
   }
 
@@ -86,36 +136,35 @@ class DepartmentsNotifier extends StateNotifier<List<DepartmentModel>> {
         state = data
             .map(
               (json) => DepartmentModel(
-                id:
-                    json['id']?.toString() ??
-                    json['code']?.toString() ??
-                    'DEPT',
-                name:
-                    json['name']?.toString() ??
-                    json['department_name']?.toString() ??
-                    'Department',
+                id: json['id']?.toString() ?? json['code']?.toString() ?? 'DEPT',
+                name: json['name']?.toString() ?? json['department_name']?.toString() ?? 'Department',
                 code: json['code']?.toString() ?? 'DEPT',
-                hod:
-                    json['hod']?.toString() ??
-                    json['hod_name']?.toString() ??
-                    'HOD',
-                intakeCapacity:
-                    int.tryParse(
-                      json['capacity']?.toString() ??
-                          json['intake_capacity']?.toString() ??
-                          '60',
-                    ) ??
-                    60,
+                hod: json['hod']?.toString() ?? json['hod_name']?.toString() ?? 'HOD',
+                intakeCapacity: int.tryParse(json['capacity']?.toString() ?? json['intake_capacity']?.toString() ?? '60') ?? 60,
                 status: json['status']?.toString() ?? 'Active',
               ),
             )
             .toList();
+      } else {
+        state = [];
       }
-    } catch (_) {}
+    } catch (_) {
+      state = [];
+    }
   }
 
   Future<void> addDepartment(DepartmentModel dept) async {
     state = [...state, dept];
+    await DepartmentService.createDepartment({
+      'code': dept.code,
+      'name': dept.name,
+      'hod': dept.hod,
+      'hod_name': dept.hod,
+      'intake_capacity': dept.intakeCapacity,
+      'capacity': dept.intakeCapacity,
+      'status': dept.status,
+    });
+    loadDepartments();
   }
 
   Future<void> updateDepartment(DepartmentModel dept) async {
@@ -123,111 +172,276 @@ class DepartmentsNotifier extends StateNotifier<List<DepartmentModel>> {
       for (final d in state)
         if (d.id == dept.id) dept else d,
     ];
+    await DepartmentService.updateDepartment(dept.id, {
+      'code': dept.code,
+      'name': dept.name,
+      'hod': dept.hod,
+      'hod_name': dept.hod,
+      'intake_capacity': dept.intakeCapacity,
+      'capacity': dept.intakeCapacity,
+      'status': dept.status,
+    });
+    loadDepartments();
   }
 
   Future<void> deleteDepartment(String id) async {
     state = state.where((d) => d.id != id).toList();
+    await DepartmentService.deleteDepartment(id);
+    loadDepartments();
   }
 }
 
-final departmentsProvider =
-    StateNotifierProvider<DepartmentsNotifier, List<DepartmentModel>>((ref) => DepartmentsNotifier());
+final departmentsProvider = StateNotifierProvider<DepartmentsNotifier, List<DepartmentModel>>((ref) => DepartmentsNotifier());
 
+// ── 3. Courses (Programmes) Notifier ──────────────────────────────────────────
 class CoursesNotifier extends StateNotifier<List<CourseModel>> {
-  CoursesNotifier([List<CourseModel>? initial])
-    : super(initial ?? _initialCourses);
+  CoursesNotifier([List<CourseModel>? initial]) : super(initial ?? []) {
+    loadCourses();
+  }
 
-  void addCourse(CourseModel course) {
+  Future<void> loadCourses() async {
+    try {
+      final list = await ProgrammeSubjectService.fetchProgrammes();
+      if (list.isNotEmpty) {
+        state = list.map((json) => CourseModel(
+          id: json['id']?.toString() ?? json['code']?.toString() ?? '',
+          code: json['code']?.toString() ?? '',
+          name: json['name']?.toString() ?? '',
+          department: json['department']?.toString() ?? 'CSE',
+          subjectsCount: 0,
+          durationYears: int.tryParse(json['duration']?.toString() ?? '4') ?? 4,
+          status: json['status']?.toString() ?? 'Active',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addCourse(CourseModel course) async {
     state = [...state, course];
+    await ProgrammeSubjectService.createProgramme({
+      'code': course.code,
+      'name': course.name,
+      'duration': course.durationYears,
+      'status': course.status,
+    });
+    loadCourses();
   }
 
-  void deleteCourse(String id) {
+  Future<void> deleteCourse(String id) async {
     state = state.where((c) => c.id != id).toList();
+    await ProgrammeSubjectService.deleteProgramme(id);
+    loadCourses();
   }
 }
 
-final coursesProvider =
-    StateNotifierProvider<CoursesNotifier, List<CourseModel>>((ref) => CoursesNotifier());
+final coursesProvider = StateNotifierProvider<CoursesNotifier, List<CourseModel>>((ref) => CoursesNotifier());
 
+// ── 4. Subjects Notifier ──────────────────────────────────────────────────────
 class SubjectsNotifier extends StateNotifier<List<SubjectModel>> {
-  SubjectsNotifier([List<SubjectModel>? initial])
-    : super(initial ?? _initialSubjects);
-
-  void addSubject(SubjectModel subject) {
-    state = [...state, subject];
+  SubjectsNotifier([List<SubjectModel>? initial]) : super(initial ?? []) {
+    loadSubjects();
   }
 
-  void deleteSubject(String id) {
+  Future<void> loadSubjects() async {
+    try {
+      final list = await ProgrammeSubjectService.fetchSubjects();
+      if (list.isNotEmpty) {
+        state = list.map((json) => SubjectModel(
+          id: json['id']?.toString() ?? json['code']?.toString() ?? '',
+          code: json['code']?.toString() ?? '',
+          name: json['name']?.toString() ?? '',
+          type: json['type']?.toString() ?? 'Core Theory',
+          credits: int.tryParse(json['credits']?.toString() ?? '3') ?? 3,
+          semester: int.tryParse(json['semester']?.toString() ?? '1') ?? 1,
+          department: json['department']?.toString() ?? 'CSE',
+          programmeId: json['programme_id']?.toString() ?? '',
+          status: json['status']?.toString() ?? 'Active',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addSubject(SubjectModel subject) async {
+    state = [...state, subject];
+    await ProgrammeSubjectService.createSubject({
+      'code': subject.code,
+      'name': subject.name,
+      'type': subject.type,
+      'credits': subject.credits,
+      'semester': subject.semester,
+      'department': subject.department,
+      'programme_id': subject.programmeId,
+      'status': subject.status,
+    });
+    loadSubjects();
+  }
+
+  Future<void> deleteSubject(String id) async {
     state = state.where((s) => s.id != id).toList();
+    await SupabaseService.instance.deleteData('subjects', id);
+    loadSubjects();
   }
 }
 
-final subjectsProvider =
-    StateNotifierProvider<SubjectsNotifier, List<SubjectModel>>((ref) => SubjectsNotifier());
+final subjectsProvider = StateNotifierProvider<SubjectsNotifier, List<SubjectModel>>((ref) => SubjectsNotifier());
 
+// ── 5. Regulations Notifier ───────────────────────────────────────────────────
 class RegulationsNotifier extends StateNotifier<List<RegulationModel>> {
-  RegulationsNotifier([List<RegulationModel>? initial])
-    : super(initial ?? _initialRegulations) {
+  RegulationsNotifier([List<RegulationModel>? initial]) : super(initial ?? []) {
     loadRegulations();
   }
 
   Future<void> loadRegulations() async {
-    state = _initialRegulations;
+    try {
+      final list = await RegulationService.fetchRegulations();
+      if (list.isNotEmpty) {
+        state = list.map((json) => RegulationModel.fromJson(json)).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
   }
 
   Future<void> addRegulation(RegulationModel reg) async {
     state = [...state, reg];
+    await RegulationService.createRegulation(reg.toJson());
+    loadRegulations();
   }
 
   Future<void> deleteRegulation(String id) async {
     state = state.where((r) => r.id != id).toList();
+    await RegulationService.deleteRegulation(id);
+    loadRegulations();
   }
 }
 
-final regulationsProvider =
-    StateNotifierProvider<RegulationsNotifier, List<RegulationModel>>((ref) => RegulationsNotifier());
+final regulationsProvider = StateNotifierProvider<RegulationsNotifier, List<RegulationModel>>((ref) => RegulationsNotifier());
 
+// ── 6. Academic Cycles (Years) Notifier ───────────────────────────────────────
 class AcademicCyclesNotifier extends StateNotifier<List<AcademicCycleModel>> {
-  AcademicCyclesNotifier([List<AcademicCycleModel>? initial])
-    : super(initial ?? _initialAcademicCycles);
+  AcademicCyclesNotifier([List<AcademicCycleModel>? initial]) : super(initial ?? []) {
+    loadCycles();
+  }
 
-  void addCycle(AcademicCycleModel cycle) {
+  Future<void> loadCycles() async {
+    try {
+      final list = await AdminSupabaseService.fetchAcademicYears();
+      if (list.isNotEmpty) {
+        state = list.map((json) => AcademicCycleModel(
+          id: json['id']?.toString() ?? '',
+          name: json['year_label']?.toString() ?? '2024-2025',
+          startDate: json['start_date']?.toString() ?? '2024-06-01',
+          endDate: json['end_date']?.toString() ?? '2025-05-31',
+          status: (json['is_current'] == true || json['is_current']?.toString() == 'true') ? 'Active' : 'Inactive',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addCycle(AcademicCycleModel cycle) async {
     state = [...state, cycle];
+    await SupabaseService.instance.insertData('academic_years', {
+      'year_label': cycle.name,
+      'start_date': cycle.startDate,
+      'end_date': cycle.endDate,
+      'is_current': cycle.status == 'Active',
+    });
+    loadCycles();
   }
 
-  void deleteCycle(String id) {
+  Future<void> deleteCycle(String id) async {
     state = state.where((c) => c.id != id).toList();
+    await SupabaseService.instance.deleteData('academic_years', id);
+    loadCycles();
   }
 }
 
-final academicCyclesProvider =
-    StateNotifierProvider<AcademicCyclesNotifier, List<AcademicCycleModel>>((
-      ref,
-    ) => AcademicCyclesNotifier());
+final academicCyclesProvider = StateNotifierProvider<AcademicCyclesNotifier, List<AcademicCycleModel>>((ref) => AcademicCyclesNotifier());
 
+// ── 7. Audit Logs Notifier ───────────────────────────────────────────────────
 class AuditLogsNotifier extends StateNotifier<List<AuditLogModel>> {
-  AuditLogsNotifier([List<AuditLogModel>? initial])
-    : super(initial ?? _initialAuditLogs);
-}
+  AuditLogsNotifier([List<AuditLogModel>? initial]) : super(initial ?? []) {
+    loadAuditLogs();
+  }
 
-final auditLogsProvider =
-    StateNotifierProvider<AuditLogsNotifier, List<AuditLogModel>>((ref) => AuditLogsNotifier());
-
-class ReportsNotifier extends StateNotifier<List<ReportModel>> {
-  ReportsNotifier([List<ReportModel>? initial])
-    : super(initial ?? _initialReports);
-
-  void addReport(ReportModel report) {
-    state = [report, ...state];
+  Future<void> loadAuditLogs() async {
+    try {
+      final list = await AdminSupabaseService.fetchAuditEntries();
+      if (list.isNotEmpty) {
+        state = list.map((json) => AuditLogModel(
+          id: json['id']?.toString() ?? '',
+          timestamp: json['timestamp']?.toString() ?? DateTime.now().toString(),
+          description: json['description']?.toString() ?? 'System Action',
+          operatorName: json['operator_name']?.toString() ?? 'Admin',
+          level: json['level']?.toString() ?? 'INFO',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
   }
 }
 
-final reportsProvider =
-    StateNotifierProvider<ReportsNotifier, List<ReportModel>>((ref) => ReportsNotifier());
+final auditLogsProvider = StateNotifierProvider<AuditLogsNotifier, List<AuditLogModel>>((ref) => AuditLogsNotifier());
 
+// ── 8. Reports Notifier ───────────────────────────────────────────────────────
+class ReportsNotifier extends StateNotifier<List<ReportModel>> {
+  ReportsNotifier([List<ReportModel>? initial]) : super(initial ?? []) {
+    loadReports();
+  }
+
+  Future<void> loadReports() async {
+    try {
+      final list = await AdminSupabaseService.fetchRepositoryDocuments();
+      if (list.isNotEmpty) {
+        state = list.map((json) => ReportModel(
+          id: json['id']?.toString() ?? '',
+          code: 'REP-${(json['id']?.toString() ?? '12345').substring(0, 5)}',
+          title: json['file_name']?.toString() ?? 'Institutional Report',
+          status: 'Completed',
+          format: json['file_type']?.toString() ?? 'PDF',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addReport(ReportModel report) async {
+    state = [report, ...state];
+    await AdminSupabaseService.addRepositoryDocument({
+      'file_name': report.title,
+      'file_type': report.format,
+      'uploaded_by': 'Admin System',
+      'uploaded_at': DateTime.now().toIso8601String(),
+    });
+    loadReports();
+  }
+}
+
+final reportsProvider = StateNotifierProvider<ReportsNotifier, List<ReportModel>>((ref) => ReportsNotifier());
+
+// ── 9. Medical Alerts Notifier ────────────────────────────────────────────────
 class MedicalAlertsNotifier extends StateNotifier<List<MedicalAlertModel>> {
-  MedicalAlertsNotifier([List<MedicalAlertModel>? initial])
-    : super(initial ?? _initialMedicalAlerts);
+  MedicalAlertsNotifier([List<MedicalAlertModel>? initial]) : super(initial ?? []);
 
   void addAlert(MedicalAlertModel alert) {
     state = [alert, ...state];
@@ -238,45 +452,116 @@ class MedicalAlertsNotifier extends StateNotifier<List<MedicalAlertModel>> {
   }
 }
 
-final medicalAlertsProvider =
-    StateNotifierProvider<MedicalAlertsNotifier, List<MedicalAlertModel>>((
-      ref,
-    ) => MedicalAlertsNotifier());
+final medicalAlertsProvider = StateNotifierProvider<MedicalAlertsNotifier, List<MedicalAlertModel>>((ref) => MedicalAlertsNotifier());
 
+// ── 10. Events Notifier ───────────────────────────────────────────────────────
 class EventsNotifier extends StateNotifier<List<EventModel>> {
-  EventsNotifier([List<EventModel>? initial])
-    : super(initial ?? _initialEvents);
-
-  void addEvent(EventModel event) {
-    state = [event, ...state];
+  EventsNotifier([List<EventModel>? initial]) : super(initial ?? []) {
+    loadEvents();
   }
 
-  void deleteEvent(String id) {
+  Future<void> loadEvents() async {
+    try {
+      final list = await AdminSupabaseService.fetchMeetings();
+      if (list.isNotEmpty) {
+        state = list.map((json) => EventModel(
+          id: json['id']?.toString() ?? '',
+          title: json['title']?.toString() ?? '',
+          date: json['date_time']?.toString() ?? json['date']?.toString() ?? '',
+          venue: json['venue']?.toString() ?? '',
+          coordinator: json['organizer']?.toString() ?? json['coordinator']?.toString() ?? '',
+          status: json['status']?.toString() ?? 'Upcoming',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addEvent(EventModel event) async {
+    state = [event, ...state];
+    await SupabaseService.instance.insertData('meetings', {
+      'title': event.title,
+      'date_time': event.date,
+      'venue': event.venue,
+      'organizer': event.coordinator,
+      'attendees': 'Faculty & Staff',
+      'status': event.status,
+    });
+    loadEvents();
+  }
+
+  Future<void> deleteEvent(String id) async {
     state = state.where((e) => e.id != id).toList();
+    await SupabaseService.instance.deleteData('meetings', id);
+    loadEvents();
   }
 }
 
-final eventsProvider = StateNotifierProvider<EventsNotifier, List<EventModel>>((
-  ref,
-) => EventsNotifier());
+final eventsProvider = StateNotifierProvider<EventsNotifier, List<EventModel>>((ref) => EventsNotifier());
 
+// ── 11. Academic Events Notifier ──────────────────────────────────────────────
 class AcademicEventsNotifier extends StateNotifier<List<AcademicEventModel>> {
-  AcademicEventsNotifier([List<AcademicEventModel>? initial])
-    : super(initial ?? _initialAcademicEvents);
-
-  void addEvent(AcademicEventModel event) {
-    state = [...state, event];
+  AcademicEventsNotifier([List<AcademicEventModel>? initial]) : super(initial ?? []) {
+    loadAcademicEvents();
   }
 
-  void updateEvent(AcademicEventModel event) {
+  Future<void> loadAcademicEvents() async {
+    try {
+      final list = await AdminSupabaseService.fetchCirculars();
+      if (list.isNotEmpty) {
+        state = list.map((json) => AcademicEventModel(
+          id: json['id']?.toString() ?? '',
+          scheduleId: json['schedule_id']?.toString() ?? '',
+          title: json['title']?.toString() ?? '',
+          department: 'CSE',
+          semester: 'Sem 1',
+          category: 'Academic',
+          startDate: json['published_date']?.toString() ?? '',
+          endDate: json['published_date']?.toString() ?? '',
+          venue: 'Main Auditorium',
+          description: json['content']?.toString() ?? '',
+          status: 'Upcoming',
+        )).toList();
+      } else {
+        state = [];
+      }
+    } catch (_) {
+      state = [];
+    }
+  }
+
+  Future<void> addEvent(AcademicEventModel event) async {
+    state = [...state, event];
+    await SupabaseService.instance.insertData('circulars', {
+      'title': event.title,
+      'content': event.description,
+      'published_by': 'Academic Registrar',
+      'published_date': event.startDate,
+      'target_audience': event.department,
+    });
+    loadAcademicEvents();
+  }
+
+  Future<void> updateEvent(AcademicEventModel event) async {
     state = [
       for (final e in state)
         if (e.id == event.id) event else e,
     ];
+    await SupabaseService.instance.updateData('circulars', {
+      'title': event.title,
+      'content': event.description,
+      'published_date': event.startDate,
+    }, event.id);
+    loadAcademicEvents();
   }
 
-  void deleteEvent(String id) {
+  Future<void> deleteEvent(String id) async {
     state = state.where((e) => e.id != id).toList();
+    await SupabaseService.instance.deleteData('circulars', id);
+    loadAcademicEvents();
   }
 
   void toggleStatus(String id) {
@@ -296,37 +581,50 @@ class AcademicEventsNotifier extends StateNotifier<List<AcademicEventModel>> {
   }
 }
 
-final academicEventsProvider =
-    StateNotifierProvider<AcademicEventsNotifier, List<AcademicEventModel>>((
-      ref,
-    ) => AcademicEventsNotifier());
+final academicEventsProvider = StateNotifierProvider<AcademicEventsNotifier, List<AcademicEventModel>>((ref) => AcademicEventsNotifier());
 
+// ── 12. Academic Holidays & Milestones Notifiers ──────────────────────────────
 class AcademicHolidaysNotifier extends StateNotifier<List<HolidayModel>> {
-  AcademicHolidaysNotifier([List<HolidayModel>? initial])
-    : super(initial ?? _initialHolidays);
+  AcademicHolidaysNotifier([List<HolidayModel>? initial]) : super(initial ?? []);
 }
 
-final academicHolidaysProvider =
-    StateNotifierProvider<AcademicHolidaysNotifier, List<HolidayModel>>((ref) => AcademicHolidaysNotifier());
+final academicHolidaysProvider = StateNotifierProvider<AcademicHolidaysNotifier, List<HolidayModel>>((ref) => AcademicHolidaysNotifier());
 
-class AcademicMilestonesNotifier
-    extends StateNotifier<List<AcademicMilestoneModel>> {
-  AcademicMilestonesNotifier([List<AcademicMilestoneModel>? initial])
-    : super(initial ?? _initialMilestones);
+class AcademicMilestonesNotifier extends StateNotifier<List<AcademicMilestoneModel>> {
+  AcademicMilestonesNotifier([List<AcademicMilestoneModel>? initial]) : super(initial ?? []);
 }
 
-final academicMilestonesProvider =
-    StateNotifierProvider<
-      AcademicMilestonesNotifier,
-      List<AcademicMilestoneModel>
-    >((ref) => AcademicMilestonesNotifier());
+final academicMilestonesProvider = StateNotifierProvider<AcademicMilestonesNotifier, List<AcademicMilestoneModel>>((ref) => AcademicMilestonesNotifier());
 
-class AcademicScheduleDocNotifier
-    extends StateNotifier<AcademicScheduleDocModel?> {
-  AcademicScheduleDocNotifier([AcademicScheduleDocModel? initial])
-    : super(initial ?? _initialScheduleDoc);
+class AcademicScheduleDocNotifier extends StateNotifier<AcademicScheduleDocModel?> {
+  AcademicScheduleDocNotifier([AcademicScheduleDocModel? initial]) : super(initial ?? null) {
+    loadDoc();
+  }
 
-  void uploadPdf(String pdfFileName, String fileSize, String uploadedBy) {
+  Future<void> loadDoc() async {
+    try {
+      final list = await AdminSupabaseService.fetchRepositoryDocuments();
+      if (list.isNotEmpty) {
+        final doc = list.first;
+        state = AcademicScheduleDocModel(
+          id: doc['id']?.toString() ?? '',
+          title: doc['file_name']?.toString() ?? 'Academic Calendar Document',
+          pdfUrl: doc['file_path']?.toString() ?? '',
+          pdfFileName: doc['file_name']?.toString() ?? 'Academic_Calendar.pdf',
+          fileSize: doc['file_size']?.toString() ?? '2.4 MB',
+          uploadedBy: doc['uploaded_by']?.toString() ?? 'Registrar',
+          uploadedAt: doc['uploaded_at']?.toString() ?? DateTime.now().toString().split(' ')[0],
+          academicYear: '2025-2026',
+        );
+      } else {
+        state = null;
+      }
+    } catch (_) {
+      state = null;
+    }
+  }
+
+  Future<void> uploadPdf(String pdfFileName, String fileSize, String uploadedBy) async {
     state = AcademicScheduleDocModel(
       id: 'DOC-${DateTime.now().millisecondsSinceEpoch}',
       title: 'Academic Calendar 2025-26 (Approved)',
@@ -337,39 +635,35 @@ class AcademicScheduleDocNotifier
       uploadedAt: DateTime.now().toString().split(' ')[0],
       academicYear: '2025-2026',
     );
+    await AdminSupabaseService.addRepositoryDocument({
+      'file_name': pdfFileName,
+      'file_size': fileSize,
+      'uploaded_by': uploadedBy,
+      'file_type': 'PDF',
+      'uploaded_at': DateTime.now().toIso8601String(),
+    });
+    loadDoc();
   }
 
-  void deletePdf() {
+  Future<void> deletePdf() async {
+    if (state != null) {
+      await AdminSupabaseService.deleteRepositoryDocument(state!.id);
+    }
     state = null;
   }
 }
 
-final academicScheduleDocProvider =
-    StateNotifierProvider<
-      AcademicScheduleDocNotifier,
-      AcademicScheduleDocModel?
-    >((ref) => AcademicScheduleDocNotifier());
+final academicScheduleDocProvider = StateNotifierProvider<AcademicScheduleDocNotifier, AcademicScheduleDocModel?>((ref) => AcademicScheduleDocNotifier());
 
-// ── Academic Schedule Filter Providers (used by AcademicScheduleScreen) ───────
+// ── Academic Schedule Filter Providers ─────────────────────────────────────────
 
-final academicScheduleSearchQueryProvider =
-    StateProvider<String>((ref) => '');
+final academicScheduleSearchQueryProvider = StateProvider<String>((ref) => '');
+final academicScheduleDeptFilterProvider = StateProvider<String>((ref) => 'ALL');
+final academicScheduleSemFilterProvider = StateProvider<String>((ref) => 'ALL');
+final academicScheduleCategoryFilterProvider = StateProvider<String>((ref) => 'ALL');
+final academicScheduleStatusFilterProvider = StateProvider<String>((ref) => 'ALL');
 
-final academicScheduleDeptFilterProvider =
-    StateProvider<String>((ref) => 'ALL');
-
-final academicScheduleSemFilterProvider =
-    StateProvider<String>((ref) => 'ALL');
-
-final academicScheduleCategoryFilterProvider =
-    StateProvider<String>((ref) => 'ALL');
-
-final academicScheduleStatusFilterProvider =
-    StateProvider<String>((ref) => 'ALL');
-
-/// Derived provider: returns filtered list of AcademicEventModel
-final filteredAcademicEventsProvider =
-    Provider<List<AcademicEventModel>>((ref) {
+final filteredAcademicEventsProvider = Provider<List<AcademicEventModel>>((ref) {
   final events = ref.watch(academicEventsProvider);
   final search = ref.watch(academicScheduleSearchQueryProvider).toLowerCase();
   final dept = ref.watch(academicScheduleDeptFilterProvider);

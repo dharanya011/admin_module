@@ -4,10 +4,10 @@ class AdminUserService {
   static Future<List<Map<String, dynamic>>> fetchAllUsers() async {
     try {
       final users = await SupabaseService.instance.fetchTable('users');
-      return users.isNotEmpty ? users : _fallbackUsers();
+      return users;
     } catch (e) {
       print('Error fetching users: $e');
-      return _fallbackUsers();
+      return [];
     }
   }
 
@@ -55,15 +55,4 @@ class AdminUserService {
       return false;
     }
   }
-
-  static List<Map<String, dynamic>> _fallbackUsers() => [
-      {
-        'id': 'admin-001',
-        'email': 'admin@ksrce.edu.in',
-        'name': 'Admin User',
-        'role': 'admin',
-        'status': 'Active',
-        'created_at': DateTime.now().toIso8601String(),
-      },
-    ];
 }

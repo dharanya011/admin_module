@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
 import '../widgets/app_card.dart';
+import '../services/admin_supabase_service.dart';
 class SemesterScreen extends ConsumerStatefulWidget {
   const SemesterScreen({super.key});
 
@@ -13,13 +14,6 @@ class _SemesterScreenState extends ConsumerState<SemesterScreen> {
   List<Map<String, dynamic>> _data = [];
   bool _loading = true;
 
-  final List<Map<String, dynamic>> _fallbackData = [
-    {'sem': 'Semester I', 'academicYear': '2026-27', 'status': 'Upcoming', 'startDate': '18 Aug 2026', 'endDate': '20 Dec 2026'},
-    {'sem': 'Semester III', 'academicYear': '2026-27', 'status': 'Active', 'startDate': '02 Aug 2026', 'endDate': '15 Dec 2026'},
-    {'sem': 'Semester V', 'academicYear': '2026-27', 'status': 'Active', 'startDate': '02 Aug 2026', 'endDate': '15 Dec 2026'},
-    {'sem': 'Semester VII', 'academicYear': '2026-27', 'status': 'Active', 'startDate': '02 Aug 2026', 'endDate': '15 Dec 2026'},
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -29,23 +23,23 @@ class _SemesterScreenState extends ConsumerState<SemesterScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      final result = <Map<String, dynamic>>[];
+      final result = await AdminSupabaseService.fetchAcademicYears();
       if (result.isNotEmpty) {
         setState(() {
-          _data = result.map((e) => {
-            'sem': e['name'] ?? e['sem'] ?? '',
-            'academicYear': e['academic_year'] ?? e['code'] ?? e['academicYear'] ?? '',
-            'status': e['status'] ?? 'Active',
-            'startDate': e['start_date'] ?? e['startDate'] ?? '',
-            'endDate': e['end_date'] ?? e['endDate'] ?? '',
+          _data = result.map((e) => <String, dynamic>{
+            'sem': e['name']?.toString() ?? e['sem']?.toString() ?? '',
+            'academicYear': e['year_label']?.toString() ?? e['academic_year']?.toString() ?? '',
+            'status': e['status']?.toString() ?? 'Active',
+            'startDate': e['start_date']?.toString() ?? '',
+            'endDate': e['end_date']?.toString() ?? '',
           }).toList();
           _loading = false;
         });
       } else {
-        setState(() { _data = List.from(_fallbackData); _loading = false; });
+        setState(() { _data = []; _loading = false; });
       }
     } catch (_) {
-      setState(() { _data = List.from(_fallbackData); _loading = false; });
+      setState(() { _data = []; _loading = false; });
     }
   }
 

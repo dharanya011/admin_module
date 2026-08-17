@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/admin_supabase_service.dart';
 import '../services/admin_user_service.dart';
+import '../shared/services/supabase_service.dart';
 import '../utils/file_downloader.dart';
 
 // ─── 1. Student Attendance & Marks Record Model ──────────────────────────────
@@ -139,37 +140,28 @@ class AttendanceMarkNotifier
     try {
       final list = await AdminSupabaseService.fetchStudentAttendanceMarks();
       if (list.isNotEmpty) {
-        state = list
-            .map(
-              (e) => StudentAttendanceMarkRecord(
-                id: e['id']?.toString() ?? '',
-                studentName: e['student_name']?.toString() ?? 'Student Record',
-                registerNo: e['register_no']?.toString() ?? '',
-                rollNo: e['roll_no']?.toString() ?? '',
-                department: e['department']?.toString() ?? 'CSE',
-                subject:
-                    e['subject']?.toString() ?? 'Data Structures & Algorithms',
-                attendancePercentage:
-                    double.tryParse(
-                      e['attendance_percentage']?.toString() ?? '90',
-                    ) ??
-                    90.0,
-                cat1Marks:
-                    double.tryParse(e['cat1_marks']?.toString() ?? '20') ??
-                    20.0,
-                cat2Marks:
-                    double.tryParse(e['cat2_marks']?.toString() ?? '20') ??
-                    20.0,
-                assessmentMarks:
-                    double.tryParse(
-                      e['assessment_marks']?.toString() ?? '12',
-                    ) ??
-                    12.0,
-              ),
-            )
-            .toList();
+        state = list.map((e) {
+          final studentId = e['student_id']?.toString() ?? e['register_no']?.toString() ?? e['student_name']?.toString() ?? 'Student';
+          final subject = e['subject_code']?.toString() ?? e['subject']?.toString() ?? 'Data Structures & Algorithms';
+          final attended = double.tryParse(e['attended_classes']?.toString() ?? e['attendance_percentage']?.toString() ?? '') ?? 90.0;
+          final totalCls = double.tryParse(e['total_classes']?.toString() ?? '') ?? 100.0;
+          final attPct = totalCls > 0 ? (attended / totalCls) * 100.0 : attended;
+          final internal = double.tryParse(e['internal_marks']?.toString() ?? e['cat1_marks']?.toString() ?? '') ?? 40.0;
+
+          return StudentAttendanceMarkRecord(
+            id: e['id']?.toString() ?? '',
+            studentName: e['student_name']?.toString() ?? studentId,
+            registerNo: e['register_no']?.toString() ?? studentId,
+            rollNo: e['roll_no']?.toString() ?? studentId,
+            department: e['department']?.toString() ?? 'CSE',
+            subject: subject,
+            attendancePercentage: double.parse(attPct.toStringAsFixed(1)),
+            cat1Marks: double.parse(((internal * 0.4).clamp(0.0, 25.0)).toStringAsFixed(1)),
+            cat2Marks: double.parse(((internal * 0.4).clamp(0.0, 25.0)).toStringAsFixed(1)),
+            assessmentMarks: double.parse(((internal * 0.2).clamp(0.0, 15.0)).toStringAsFixed(1)),
+          );
+        }).toList();
       } else {
-        // Fetch live student users from Supabase admin_users table (No mock fallback)
         final liveUsers = await AdminUserService.fetchAllUsers();
         final studentUsers = liveUsers
             .where(
@@ -217,17 +209,40 @@ class AttendanceMarkNotifier
 
   Future<void> addRecord(StudentAttendanceMarkRecord record) async {
     state = [record, ...state];
+    
+    // 1. Insert into student_attendance_marks table in Supabase
     await AdminSupabaseService.addStudentAttendanceMark({
-      'student_name': record.studentName,
-      'register_no': record.registerNo,
-      'roll_no': record.rollNo,
-      'department': record.department,
-      'subject': record.subject,
-      'attendance_percentage': record.attendancePercentage,
-      'cat1_marks': record.cat1Marks,
-      'cat2_marks': record.cat2Marks,
-      'assessment_marks': record.assessmentMarks,
+      'student_id': record.registerNo.isNotEmpty ? record.registerNo : record.studentName,
+      'subject_code': record.subject,
+      'total_classes': 100,
+      'attended_classes': record.attendancePercentage.round(),
+      'internal_marks': record.totalInternalMarks,
+      'semester': 1,
     });
+
+    // 2. Also register student into users table in Supabase if new
+    await SupabaseService.instance.insertData('users', {
+      'name': record.studentName,
+      'email': '${record.registerNo.isNotEmpty ? record.registerNo : 'student_${DateTime.now().millisecondsSinceEpoch}'}@ksrce.ac.in',
+      'role': 'Student',
+      'department': record.department,
+      'registration_number': record.registerNo,
+      'roll_number': record.rollNo,
+      'status': 'Active',
+      'node': 'Active Node',
+    });
+
+    // 3. Sync to students table in Supabase
+    await SupabaseService.instance.insertData('students', {
+      'name': record.studentName,
+      'roll_number': record.rollNo.isNotEmpty ? record.rollNo : record.registerNo,
+      'admission_number': record.registerNo,
+      'department_code': record.department,
+      'batch': '2022-2026',
+      'section': 'A',
+      'status': 'Active',
+    });
+
     loadData();
   }
 
@@ -237,15 +252,12 @@ class AttendanceMarkNotifier
         if (r.id == record.id) record else r,
     ];
     await AdminSupabaseService.updateStudentAttendanceMark(record.id, {
-      'student_name': record.studentName,
-      'register_no': record.registerNo,
-      'roll_no': record.rollNo,
-      'department': record.department,
-      'subject': record.subject,
-      'attendance_percentage': record.attendancePercentage,
-      'cat1_marks': record.cat1Marks,
-      'cat2_marks': record.cat2Marks,
-      'assessment_marks': record.assessmentMarks,
+      'student_id': record.registerNo.isNotEmpty ? record.registerNo : record.studentName,
+      'subject_code': record.subject,
+      'total_classes': 100,
+      'attended_classes': record.attendancePercentage.round(),
+      'internal_marks': record.totalInternalMarks,
+      'semester': 1,
     });
     loadData();
   }
@@ -739,8 +751,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 12,
+                              runSpacing: 6,
                               children: [
                                 Text(
                                   'Attendance Weightage: ${attMarks.toStringAsFixed(1)} / 5',
