@@ -90,7 +90,7 @@ class _AppDrawerState extends State<AppDrawer> {
           style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF9CA3AF),
+            color: AppColors.sidebarSection,
             letterSpacing: 0.9,
             fontFamily: AppTypography.fontFamily,
           ),
@@ -115,7 +115,7 @@ class _AppDrawerState extends State<AppDrawer> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
+            color: isSelected ? AppColors.sidebarActiveBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -125,8 +125,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 width: 3.5,
                 height: 18,
                 decoration: BoxDecoration(
-                  color:
-                      isSelected ? const Color(0xFF0056A6) : Colors.transparent,
+                  color: isSelected
+                      ? AppColors.sidebarTextActive
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -135,8 +136,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 icon,
                 size: 18,
                 color: isSelected
-                    ? const Color(0xFF0056A6)
-                    : const Color(0xFF6B7280),
+                    ? AppColors.sidebarTextActive
+                    : AppColors.sidebarText,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -146,8 +147,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     color: isSelected
-                        ? const Color(0xFF0056A6)
-                        : const Color(0xFF374151),
+                        ? AppColors.sidebarTextActive
+                        : AppColors.sidebarText,
                     fontFamily: AppTypography.fontFamily,
                   ),
                 ),
@@ -159,8 +160,8 @@ class _AppDrawerState extends State<AppDrawer> {
                   Icons.keyboard_arrow_down_rounded,
                   size: 18,
                   color: isSelected
-                      ? const Color(0xFF0056A6)
-                      : const Color(0xFF9CA3AF),
+                      ? AppColors.sidebarTextActive
+                      : AppColors.sidebarSection,
                 ),
               ),
             ],
@@ -189,7 +190,7 @@ class _AppDrawerState extends State<AppDrawer> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
+            color: isSelected ? AppColors.sidebarActiveBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -199,8 +200,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 width: 3.5,
                 height: 18,
                 decoration: BoxDecoration(
-                  color:
-                      isSelected ? const Color(0xFF0056A6) : Colors.transparent,
+                  color: isSelected
+                      ? AppColors.sidebarTextActive
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -209,8 +211,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 icon,
                 size: 18,
                 color: isSelected
-                    ? const Color(0xFF0056A6)
-                    : const Color(0xFF6B7280),
+                    ? AppColors.sidebarTextActive
+                    : AppColors.sidebarText,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -220,8 +222,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     color: isSelected
-                        ? const Color(0xFF0056A6)
-                        : const Color(0xFF374151),
+                        ? AppColors.sidebarTextActive
+                        : AppColors.sidebarText,
                     fontFamily: AppTypography.fontFamily,
                   ),
                 ),
@@ -254,7 +256,7 @@ class _AppDrawerState extends State<AppDrawer> {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
+            color: isSelected ? AppColors.sidebarActiveBg : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -264,8 +266,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 width: 3,
                 height: 14,
                 decoration: BoxDecoration(
-                  color:
-                      isSelected ? const Color(0xFF0056A6) : Colors.transparent,
+                  color: isSelected
+                      ? AppColors.sidebarTextActive
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -274,8 +277,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 icon,
                 size: 15,
                 color: isSelected
-                    ? const Color(0xFF0056A6)
-                    : const Color(0xFF9CA3AF),
+                    ? AppColors.sidebarTextActive
+                    : AppColors.sidebarText,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -286,8 +289,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected
-                        ? const Color(0xFF0056A6)
-                        : const Color(0xFF6B7280),
+                        ? AppColors.sidebarTextActive
+                        : AppColors.sidebarText,
                     fontFamily: AppTypography.fontFamily,
                   ),
                 ),
@@ -303,9 +306,9 @@ class _AppDrawerState extends State<AppDrawer> {
   Widget build(BuildContext context) => Container(
         width: 260,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: AppColors.sidebarBg,
           border: Border(
-            right: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+            right: BorderSide(color: AppColors.sidebarDivider, width: 1),
           ),
         ),
         child: SafeArea(
@@ -340,7 +343,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               const Text(
                                 'Campus OS',
                                 style: TextStyle(
-                                  color: Color(0xFF1F2937),
+                                  color: AppColors.sidebarTextActive,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.5,
@@ -372,7 +375,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           const Text(
                             'ERP Admin Portal',
                             style: TextStyle(
-                              color: Color(0xFF6B7280),
+                              color: AppColors.sidebarText,
                               fontSize: 11,
                               fontFamily: AppTypography.fontFamily,
                             ),
@@ -384,7 +387,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
               ),
 
-              const Divider(color: Color(0xFFE5E7EB), height: 1, thickness: 1),
+              const Divider(
+                  color: AppColors.sidebarDivider, height: 1, thickness: 1),
 
               // ── ERP Admin Navigation Modules List (36 Pages) ──────
               Expanded(

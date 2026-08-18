@@ -24,13 +24,18 @@ class AppColors {
   static const Color textMuted = Color(0xFF9CA3AF);     // Muted Text
 
   // Sidebar Palette
-  static const Color sidebarBg = Color(0xFF003B73);     // Dark Blue Sidebar
-  static const Color sidebarText = Color(0xFFE5E7EB);
-  static const Color sidebarTextActive = Colors.white;
-  static const Color sidebarActiveBg = Color(0xFF0056A6); // Primary Blue Active Pill
+  static const Color sidebarBg = Color(0xFF0D1B3E); // Dark Navy Sidebar
+  static const Color sidebarText = Color(0xFF94A3B8); // Muted Slate Inactive
+  static const Color sidebarTextActive = Colors.white; // Bright White Active
+  static const Color sidebarActiveBg = Color(0xFF0056A6); // Active Pill
   static const Color sidebarDivider = Color(0xFF0C244A);
   static const Color sidebarSection = Color(0xFF94A3B8);
   static const Color footerBg = Color(0xFF002247);
+
+  // Search & Header Palette
+  static const Color searchBg = Color(0xFF1B3260); // Search Input Fill
+  static const Color searchBorder = Color(0xFF3B5A8C); // Muted Blue-Gray
+  static const Color searchText = Color(0xFF8FA8CC); // Muted Light Blue-Gray
 
   // Semantic Colors
   static const Color success = Color(0xFF16A34A);       // Success Green

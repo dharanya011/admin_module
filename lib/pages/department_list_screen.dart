@@ -132,27 +132,11 @@ class _DepartmentListScreenState extends ConsumerState<DepartmentListScreen> {
                         validator: (val) => val == null || val.isEmpty ? 'Name is required' : null,
                       ),
                       AppSpacing.gapMd,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Dept Code',
-                              hintText: 'CSE',
-                              controller: _codeController,
-                              validator: (val) => val == null || val.isEmpty ? 'Code is required' : null,
-                            ),
-                          ),
-                          AppSpacing.gapMd,
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Intake Capacity',
-                              hintText: '180',
-                              controller: _capacityController,
-                              keyboardType: TextInputType.number,
-                              validator: (val) => val == null || int.tryParse(val) == null ? 'Enter valid number' : null,
-                            ),
-                          ),
-                        ],
+                      AppTextField(
+                        label: 'Dept Code',
+                        hintText: 'CSE',
+                        controller: _codeController,
+                        validator: (val) => val == null || val.isEmpty ? 'Code is required' : null,
                       ),
                       AppSpacing.gapMd,
                       AppTextField(
@@ -184,7 +168,7 @@ class _DepartmentListScreenState extends ConsumerState<DepartmentListScreen> {
                               name: _nameController.text,
                               code: _codeController.text.toUpperCase(),
                               hod: _hodController.text.isNotEmpty ? _hodController.text : 'Dr. Head of Dept',
-                              intakeCapacity: int.tryParse(_capacityController.text) ?? 60,
+                              intakeCapacity: 60,
                               status: _status,
                             );
                             ref.read(departmentsProvider.notifier).addDepartment(newDept);

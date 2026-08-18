@@ -1,6 +1,7 @@
 import 'dart:math' as math;
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../theme.dart';
+import '../services/student_service.dart';
 import '../widgets/app_card.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -11,7 +12,13 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String _selectedDeptFilter = 'ALL';
+  Future<List<Map<String, dynamic>>>? _studentsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _studentsFuture = StudentService.fetchStudents();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,43 +277,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: Color(0xFF0F172A),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.filter_list_rounded, size: 14, color: Color(0xFF64748B)),
-                    const SizedBox(width: 6),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: _selectedDeptFilter,
-                        isDense: true,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 16),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF334155),
-                        ),
-                        items: const [
-                          DropdownMenuItem(value: 'ALL', child: Text('ALL')),
-                          DropdownMenuItem(value: 'CSE', child: Text('CSE')),
-                          DropdownMenuItem(value: 'ECE', child: Text('ECE')),
-                          DropdownMenuItem(value: 'IT', child: Text('IT')),
-                        ],
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() => _selectedDeptFilter = val);
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -323,7 +293,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       size: const Size(140, 140),
                       painter: _DonutChartPainter(
                         segments: const [
-                          _ChartSegment(32.1, Color(0xFF0052CC)), // CSE
+                          _ChartSegment(32.1, Color.fromRGBO(0, 82, 204, 1)), // CSE
                           _ChartSegment(24.3, Color(0xFF059669)), // ECE
                           _ChartSegment(20.0, Color(0xFFD97706)), // IT
                           _ChartSegment(15.2, Color(0xFF7C3AED)), // AIDS
@@ -447,13 +417,167 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SizedBox(
             height: 150,
             width: double.infinity,
-            child: CustomPaint(
-              painter: _AdmissionTrendLinePainter(),
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _studentsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Color(0xFF0052CC),
+                      ),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Unable to load admission data',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                    ),
+                  );
+                }
+
+                final students = snapshot.data ?? [];
+
+                // Group students by admission year
+                final yearCounts = <int, int>{};
+                for (final s in students) {
+                  final dateStr = s['admission_date']?.toString();
+                  if (dateStr == null || dateStr.isEmpty) continue;
+                  final year = _extractYear(dateStr);
+                  if (year != null) {
+                    yearCounts[year] = (yearCounts[year] ?? 0) + 1;
+                  }
+                }
+
+                if (yearCounts.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No admission data yet',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                    ),
+                  );
+                }
+
+                final years = yearCounts.keys.toList()..sort();
+                final spots = <FlSpot>[
+                  for (var i = 0; i < years.length; i++)
+                    FlSpot(i.toDouble(), yearCounts[years[i]]!.toDouble()),
+                ];
+                final maxCount = yearCounts.values.reduce((a, b) => a > b ? a : b);
+
+                return LineChart(
+                  LineChartData(
+                    minX: 0,
+                    maxX: (years.length - 1).toDouble(),
+                    minY: 0,
+                    maxY: maxCount.toDouble() + 2,
+                    lineTouchData: LineTouchData(
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipColor: (_) => const Color(0xFF0F172A),
+                        getTooltipItems: (touchedSpots) {
+                          return touchedSpots.map((spot) {
+                            final idx = spot.x.toInt();
+                            return LineTooltipItem(
+                              '${years[idx]}: ${spot.y.toInt()} students',
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ),
+                    titlesData: FlTitlesData(
+                      topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (v, meta) {
+                            final idx = v.toInt();
+                            if (idx >= 0 && idx < years.length) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Text(
+                                  '${years[idx]}',
+                                  style: const TextStyle(
+                                    fontSize: 10.5,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                ),
+                              );
+                            }
+                            return const Text('');
+                          },
+                        ),
+                      ),
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          getTitlesWidget: (v, meta) {
+                            if (v == v.toInt()) {
+                              return Text(
+                                '${v.toInt()}',
+                                style: const TextStyle(
+                                  fontSize: 9.5,
+                                  color: Color(0xFF94A3B8),
+                                ),
+                              );
+                            }
+                            return const Text('');
+                          },
+                        ),
+                      ),
+                    ),
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      getDrawingHorizontalLine: (v) =>
+                          const FlLine(color: Color(0xFFF1F5F9), strokeWidth: 1),
+                    ),
+                    borderData: FlBorderData(show: false),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: spots,
+                        color: const Color(0xFF0052CC),
+                        barWidth: 2.5,
+                        isCurved: true,
+                        dotData: const FlDotData(show: true),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          color: const Color(0xFF0052CC).withValues(alpha: 0.08),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
       ),
     );
+  }
+
+  int? _extractYear(String dateStr) {
+    final match = RegExp(r'(19|20)\d{2}').firstMatch(dateStr);
+    if (match != null) {
+      return int.tryParse(match.group(0)!);
+    }
+    return null;
   }
 
   // ── 5. Pending Approvals Card ──
@@ -487,20 +611,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             count: '5',
             badgeBg: Color(0xFFFEF3C7),
             badgeFg: Color(0xFFD97706),
-          ),
-          const SizedBox(height: 12),
-          const _ApprovalItemRow(
-            title: 'Student OD',
-            count: '18',
-            badgeBg: Color(0xFFFEE2E2),
-            badgeFg: Color(0xFFDC2626),
-          ),
-          const SizedBox(height: 12),
-          const _ApprovalItemRow(
-            title: 'Bonafide Requests',
-            count: '4',
-            badgeBg: Color(0xFFEFF6FF),
-            badgeFg: Color(0xFF0052CC),
           ),
           const SizedBox(height: 12),
           const _ApprovalItemRow(
@@ -680,87 +790,6 @@ class _FacultyBarRow extends StatelessWidget {
       ],
     );
   }
-}
-
-// ── Admission Trend Line Chart Custom Painter ──
-class _AdmissionTrendLinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final linePaint = Paint()
-      ..color = const Color(0xFF0052CC)
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke;
-
-    final dotPaint = Paint()
-      ..color = const Color(0xFF0052CC)
-      ..style = PaintingStyle.fill;
-
-    final gridPaint = Paint()
-      ..color = const Color(0xFFE2E8F0)
-      ..strokeWidth = 1.0;
-
-    final years = [
-      '2022', '2022', '2022', '2022', '2022',
-      '2023', '2023', '2023', '2023',
-      '2024', '2024', '2024',
-      '2025'
-    ];
-
-    // Data points progression
-    final points = <Offset>[];
-    final double stepX = size.width / (years.length - 1);
-    final double bottomY = size.height - 24;
-
-    for (int i = 0; i < years.length; i++) {
-      final double x = i * stepX;
-      // Upward trend curve calculation
-      final double progress = i / (years.length - 1);
-      final double y = bottomY - (progress * (size.height - 40));
-      points.add(Offset(x, y));
-    }
-
-    // Draw baseline grid line
-    canvas.drawLine(
-      Offset(0, bottomY),
-      Offset(size.width, bottomY),
-      gridPaint,
-    );
-
-    // Draw trend line
-    final path = Path();
-    path.moveTo(points.first.dx, points.first.dy);
-    for (int i = 1; i < points.length; i++) {
-      path.lineTo(points[i].dx, points[i].dy);
-    }
-    canvas.drawPath(path, linePaint);
-
-    // Draw data points & X-axis Year labels
-    const textStyle = TextStyle(
-      fontSize: 10,
-      color: Color(0xFF94A3B8),
-    );
-
-    for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 3.5, dotPaint);
-
-      // Draw label every 2 steps or for distinct years
-      if (i % 1 == 0) {
-        final textSpan = TextSpan(text: years[i], style: textStyle);
-        final textPainter = TextPainter(
-          text: textSpan,
-          textDirection: TextDirection.ltr,
-        );
-        textPainter.layout();
-        textPainter.paint(
-          canvas,
-          Offset(points[i].dx - (textPainter.width / 2), size.height - 16),
-        );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 // ── Pending Approval Item Row ──

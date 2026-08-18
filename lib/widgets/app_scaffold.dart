@@ -21,7 +21,7 @@ class AppScaffold extends StatefulWidget {
 }
 
 class _AppScaffoldState extends State<AppScaffold> {
-  bool _isSidebarVisible = true;
+  final bool _isSidebarVisible = true;
   bool _showPreloader = false;
 
   void _showSearchDialog(BuildContext context) {
@@ -57,41 +57,44 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
-        child: Container(
+      drawer:
+          isMobile ? AppDrawer(currentLocation: widget.currentLocation) : null,
+      body: Row(
+        children: [
+          if (!isMobile && _isSidebarVisible)
+            AppDrawer(currentLocation: widget.currentLocation),
+          Expanded(
+            child: Column(
+              children: [
+                // ── Top Header Bar (search bar + profile menu) ──
+                // Moved inside body so AppDrawer (sidebar) spans the full
+                // viewport height — aligned with this row, not above it.
+                Container(
           height: 60,
           decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+            color: AppColors.sidebarBg,
+            border: Border(bottom: BorderSide(color: AppColors.sidebarDivider)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: SafeArea(
             bottom: false,
             child: Row(
               children: [
-                // ── Hamburger Toggle Button ──
-                Builder(
-                  builder: (context) => IconButton(
-                    onPressed: () {
-                      if (isMobile) {
-                        Scaffold.of(context).openDrawer();
-                      } else {
-                        setState(() {
-                          _isSidebarVisible = !_isSidebarVisible;
-                        });
-                      }
-                    },
-                    icon: Icon(
-                      _isSidebarVisible && !isMobile
-                          ? Icons.menu_open_rounded
-                          : Icons.menu_rounded,
-                      color: const Color(0xFF0F172A),
-                      size: 22,
+                // ── Mobile Only: Minimal hamburger to open nav drawer ──
+                // Desktop/tablet: hamburger removed; sidebar is always
+                // visible (`_isSidebarVisible` stays true, never toggled).
+                if (isMobile)
+                  Builder(
+                    builder: (context) => IconButton(
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                      icon: const Icon(
+                        Icons.menu_rounded,
+                        color: AppColors.sidebarTextActive,
+                        size: 22,
+                      ),
+                      tooltip: 'Open Navigation',
                     ),
-                    tooltip: 'Toggle Navigation',
                   ),
-                ),
                 const SizedBox(width: 8),
 
                 // ── Search Input Box (Middle Header with Command Palette) ──
@@ -101,9 +104,9 @@ class _AppScaffoldState extends State<AppScaffold> {
                       constraints: const BoxConstraints(maxWidth: 480),
                       height: 38,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
+                        color: AppColors.searchBg,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.searchBorder),
                       ),
                       child: InkWell(
                         onTap: () => _showSearchDialog(context),
@@ -114,7 +117,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                             children: [
                               const Icon(
                                 Icons.search_rounded,
-                                color: AppColors.primary,
+                                color: AppColors.searchText,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
@@ -125,7 +128,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                                       : 'Global Search or type Ctrl + K...',
                                   style: const TextStyle(
                                     fontSize: 12.5,
-                                    color: AppColors.textSecondary,
+                                    color: AppColors.searchText,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -137,16 +140,17 @@ class _AppScaffoldState extends State<AppScaffold> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.searchBg,
                                     borderRadius: BorderRadius.circular(4),
-                                    border: Border.all(color: AppColors.border),
+                                    border: Border.all(
+                                        color: AppColors.searchBorder),
                                   ),
                                   child: const Text(
                                     'Ctrl + K',
                                     style: TextStyle(
                                       fontSize: 9.5,
                                       fontWeight: FontWeight.bold,
-                                      color: AppColors.textSecondary,
+                                      color: AppColors.searchText,
                                     ),
                                   ),
                                 ),
@@ -287,21 +291,21 @@ class _AppScaffoldState extends State<AppScaffold> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1F2937),
+                                  color: AppColors.sidebarTextActive,
                                 ),
                               ),
                               Text(
                                 'ERP Admin',
                                 style: TextStyle(
                                   fontSize: 9.5,
-                                  color: Color(0xFF6B7280),
+                                  color: AppColors.sidebarText,
                                 ),
                               ),
                             ],
                           ),
                           const Icon(
                             Icons.arrow_drop_down_rounded,
-                            color: Color(0xFF6B7280),
+                            color: AppColors.sidebarText,
                           ),
                         ],
                       ],
@@ -312,17 +316,7 @@ class _AppScaffoldState extends State<AppScaffold> {
             ),
           ),
         ),
-      ),
-      drawer:
-          isMobile ? AppDrawer(currentLocation: widget.currentLocation) : null,
-      body: Row(
-        children: [
-          if (!isMobile && _isSidebarVisible)
-            AppDrawer(currentLocation: widget.currentLocation),
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(child: widget.child),
+        Expanded(child: widget.child),
 
                 // ── Deep Navy Bottom Footer Bar ──
                 Container(
