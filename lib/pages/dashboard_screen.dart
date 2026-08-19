@@ -29,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Top 5 Metric Cards Row ──
+            // ── Top 6 Metric Cards Row ──
             LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 1100;
@@ -80,6 +80,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           badgeSuffix: 'Curriculum Subjects',
                         ),
                       ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTopMetricCard(
+                          title: 'Degree',
+                          value: '4',
+                          badgePrefix: '1 Active',
+                          badgeSuffix: 'Degrees Offered',
+                        ),
+                      ),
                     ],
                   );
                 } else {
@@ -92,35 +101,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         value: '4206',
                         badgePrefix: '1 Active',
                         badgeSuffix: 'Total Enrolled',
-                        width: 200,
+                        width: 180,
                       ),
                       _buildTopMetricCard(
                         title: 'Faculty',
                         value: '340',
                         badgePrefix: '1 Active',
                         badgeSuffix: 'Teaching Staff',
-                        width: 200,
+                        width: 180,
                       ),
                       _buildTopMetricCard(
                         title: 'Departments',
                         value: '4',
                         badgePrefix: '1 Active',
                         badgeSuffix: 'Academic Units',
-                        width: 200,
+                        width: 180,
                       ),
                       _buildTopMetricCard(
                         title: 'Programmes',
                         value: '3',
                         badgePrefix: '1 Active',
                         badgeSuffix: 'Degree Schemes',
-                        width: 200,
+                        width: 180,
                       ),
                       _buildTopMetricCard(
                         title: 'Courses',
                         value: '3',
                         badgePrefix: '1 Active',
                         badgeSuffix: 'Curriculum Subjects',
-                        width: 200,
+                        width: 180,
+                      ),
+                      _buildTopMetricCard(
+                        title: 'Degree',
+                        value: '4',
+                        badgePrefix: '1 Active',
+                        badgeSuffix: 'Degrees Offered',
+                        width: 180,
                       ),
                     ],
                   );
@@ -447,7 +463,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // Group students by admission year
                 final yearCounts = <int, int>{};
                 for (final s in students) {
-                  final dateStr = s['admission_date']?.toString();
+                  final dateStr = (s['admission_date'] ?? s['joining_date'] ?? s['created_at'])?.toString();
                   if (dateStr == null || dateStr.isEmpty) continue;
                   final year = _extractYear(dateStr);
                   if (year != null) {
@@ -455,43 +471,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }
                 }
 
-                if (yearCounts.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No admission data yet',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                    ),
-                  );
-                }
+                final defaultYears = [2021, 2022, 2023, 2024, 2025, 2026];
+                final displayYears = yearCounts.isNotEmpty
+                    ? (yearCounts.keys.toList()..sort())
+                    : defaultYears;
 
-                final years = yearCounts.keys.toList()..sort();
-                final spots = <FlSpot>[
-                  for (var i = 0; i < years.length; i++)
-                    FlSpot(i.toDouble(), yearCounts[years[i]]!.toDouble()),
-                ];
-                final maxCount = yearCounts.values.reduce((a, b) => a > b ? a : b);
+                final maxCount = yearCounts.isNotEmpty
+                    ? yearCounts.values.reduce(math.max).toDouble()
+                    : 10.0;
+                final maxY = (maxCount + (maxCount * 0.25)).clamp(5.0, 10000.0);
 
-                return LineChart(
-                  LineChartData(
-                    minX: 0,
-                    maxX: (years.length - 1).toDouble(),
-                    minY: 0,
-                    maxY: maxCount.toDouble() + 2,
-                    lineTouchData: LineTouchData(
-                      touchTooltipData: LineTouchTooltipData(
+                return BarChart(
+                  BarChartData(
+                    alignment: BarChartAlignment.spaceAround,
+                    maxY: maxY,
+                    barTouchData: BarTouchData(
+                      enabled: true,
+                      touchTooltipData: BarTouchTooltipData(
                         getTooltipColor: (_) => const Color(0xFF0F172A),
-                        getTooltipItems: (touchedSpots) {
-                          return touchedSpots.map((spot) {
-                            final idx = spot.x.toInt();
-                            return LineTooltipItem(
-                              '${years[idx]}: ${spot.y.toInt()} students',
-                              const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                              ),
-                            );
-                          }).toList();
+                        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          final year = displayYears[group.x.toInt()];
+                          final count = rod.toY.toInt();
+                          return BarTooltipItem(
+                            '$year: $count Students',
+                            const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11,
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -505,39 +513,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
+                          reservedSize: 28,
                           getTitlesWidget: (v, meta) {
                             final idx = v.toInt();
-                            if (idx >= 0 && idx < years.length) {
+                            if (idx >= 0 && idx < displayYears.length) {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
-                                  '${years[idx]}',
+                                  '${displayYears[idx]}',
                                   style: const TextStyle(
-                                    fontSize: 10.5,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                     color: Color(0xFF64748B),
                                   ),
                                 ),
                               );
                             }
-                            return const Text('');
+                            return const SizedBox.shrink();
                           },
                         ),
                       ),
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: 30,
+                          reservedSize: 32,
                           getTitlesWidget: (v, meta) {
                             if (v == v.toInt()) {
                               return Text(
                                 '${v.toInt()}',
                                 style: const TextStyle(
-                                  fontSize: 9.5,
+                                  fontSize: 10,
                                   color: Color(0xFF94A3B8),
                                 ),
                               );
                             }
-                            return const Text('');
+                            return const SizedBox.shrink();
                           },
                         ),
                       ),
@@ -549,18 +559,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           const FlLine(color: Color(0xFFF1F5F9), strokeWidth: 1),
                     ),
                     borderData: FlBorderData(show: false),
-                    lineBarsData: [
-                      LineChartBarData(
-                        spots: spots,
-                        color: const Color(0xFF0052CC),
-                        barWidth: 2.5,
-                        isCurved: true,
-                        dotData: const FlDotData(show: true),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          color: const Color(0xFF0052CC).withValues(alpha: 0.08),
+                    barGroups: [
+                      for (var i = 0; i < displayYears.length; i++)
+                        BarChartGroupData(
+                          x: i,
+                          barRods: [
+                            BarChartRodData(
+                              toY: (yearCounts[displayYears[i]] ?? 0).toDouble(),
+                              color: const Color(0xFF0052CC),
+                              width: displayYears.length > 8 ? 12 : 18,
+                              borderRadius:
+                                  const BorderRadius.vertical(top: Radius.circular(5)),
+                              backDrawRodData: BackgroundBarChartRodData(
+                                show: true,
+                                toY: maxY,
+                                color: const Color(0xFFF1F5F9),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
                     ],
                   ),
                 );
