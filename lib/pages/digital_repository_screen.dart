@@ -13,6 +13,7 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
   List<Map<String, dynamic>> _docs = [];
   bool _loading = true;
   String? _selectedFolderId;
+  String? _selectedTypeFilter;
   String _searchQuery = '';
 
   @override
@@ -25,7 +26,19 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
     if (mounted) setState(() { _folders = folders; _docs = docs; _loading = false; });
   }
 
-  List<Map<String, dynamic>> get _filteredDocs => _searchQuery.isEmpty ? _docs : _docs.where((d) => (d['title'] ?? '').toLowerCase().contains(_searchQuery.toLowerCase()) || (d['category'] ?? '').toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+  List<Map<String, dynamic>> get _filteredDocs {
+    var result = _docs;
+    if (_selectedTypeFilter == 'PDF') {
+      result = result.where((d) => d['file_type'] == 'PDF').toList();
+    } else if (_selectedTypeFilter == 'OTHER') {
+      result = result.where((d) => d['file_type'] != 'PDF').toList();
+    }
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      result = result.where((d) => (d['title'] ?? '').toLowerCase().contains(q) || (d['category'] ?? '').toLowerCase().contains(q)).toList();
+    }
+    return result;
+  }
 
   void _showAddDocModal() {
     final titleCtrl = TextEditingController();
@@ -390,13 +403,13 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
                 if (isDesktop) {
                   return Row(
                     children: [
-                      Expanded(child: _statCard('Documents', docCount, Icons.description_rounded, const Color(0xFF0052CC))),
+                      Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = null), child: _statCard('Documents', docCount, Icons.description_rounded, const Color(0xFF0052CC), selected: _selectedTypeFilter == null))),
                       const SizedBox(width: 12),
                       Expanded(child: _statCard('Folders', folderCount, Icons.folder_rounded, const Color(0xFFD97706))),
                       const SizedBox(width: 12),
-                      Expanded(child: _statCard('PDFs', pdfCount, Icons.picture_as_pdf_rounded, const Color(0xFFDC2626))),
+                      Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = 'PDF'), child: _statCard('PDFs', pdfCount, Icons.picture_as_pdf_rounded, const Color(0xFFDC2626), selected: _selectedTypeFilter == 'PDF'))),
                       const SizedBox(width: 12),
-                      Expanded(child: _statCard('Other', otherCount, Icons.file_copy_rounded, const Color(0xFF9333EA))),
+                      Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = 'OTHER'), child: _statCard('Other', otherCount, Icons.file_copy_rounded, const Color(0xFF9333EA), selected: _selectedTypeFilter == 'OTHER'))),
                     ],
                   );
                 }
@@ -405,7 +418,7 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: _statCard('Documents', docCount, Icons.description_rounded, const Color(0xFF0052CC))),
+                        Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = null), child: _statCard('Documents', docCount, Icons.description_rounded, const Color(0xFF0052CC), selected: _selectedTypeFilter == null))),
                         const SizedBox(width: 10),
                         Expanded(child: _statCard('Folders', folderCount, Icons.folder_rounded, const Color(0xFFD97706))),
                       ],
@@ -413,9 +426,9 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Expanded(child: _statCard('PDFs', pdfCount, Icons.picture_as_pdf_rounded, const Color(0xFFDC2626))),
+                        Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = 'PDF'), child: _statCard('PDFs', pdfCount, Icons.picture_as_pdf_rounded, const Color(0xFFDC2626), selected: _selectedTypeFilter == 'PDF'))),
                         const SizedBox(width: 10),
-                        Expanded(child: _statCard('Other', otherCount, Icons.file_copy_rounded, const Color(0xFF9333EA))),
+                        Expanded(child: GestureDetector(onTap: () => setState(() => _selectedTypeFilter = 'OTHER'), child: _statCard('Other', otherCount, Icons.file_copy_rounded, const Color(0xFF9333EA), selected: _selectedTypeFilter == 'OTHER'))),
                       ],
                     ),
                   ],
@@ -453,9 +466,9 @@ class _DigitalRepositoryScreenState extends State<DigitalRepositoryScreen> {
     );
   }
 
-  Widget _statCard(String t, String v, IconData icon, Color c) => Container(
+  Widget _statCard(String t, String v, IconData icon, Color c, {bool selected = false}) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+    decoration: BoxDecoration(color: selected ? c.withValues(alpha: 0.05) : Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: selected ? c : const Color(0xFFE2E8F0))),
     child: Row(
       children: [
         Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)), child: Icon(icon, color: c, size: 20)),

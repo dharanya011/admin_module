@@ -1,0 +1,184 @@
+﻿
+admin_module\analyze_output2.txt:1060:   info - Sort directive sections alphabetically. Try sorting the 
+directives - lib\pages\digital_repository_screen.dart:2:1 - directives_ordering
+admin_module\analyze_output2.txt:1061:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:8:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1062:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:25:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1063:   info - Statement should be on a separate line. Try moving the statement 
+to a new line - lib\pages\digital_repository_screen.dart:26:18 - always_put_control_body_on_new_line
+admin_module\analyze_output2.txt:1064:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:26:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1065:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:38:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1066:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:55:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1067:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:60:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1068:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:70:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1069:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:82:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1070:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:90:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1071:   info - Catch clause should use 'on' to specify the type of exception 
+being caught. Try adding an 'on' clause before the 'catch' - lib\pages\digital_repository_screen.dart:96:25 - 
+avoid_catches_without_on_clauses
+admin_module\analyze_output2.txt:1072:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:104:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1073:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:107:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1074:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:116:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1075:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:120:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1076:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:121:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1077:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:131:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1078:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:135:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1079:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:142:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1080:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:143:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1081:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:144:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1082:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:149:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1083:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:161:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1084:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:173:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1085:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:184:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1086:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:187:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1087:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:200:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1088:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:203:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1089:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:217:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1090:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:233:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1091:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:234:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1092:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:241:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1093:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:251:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1094:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:256:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1095:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:258:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1096:   info - Missing an 'await' for the 'Future' computed by this expression. 
+Try adding an 'await' or wrapping the expression with 'unawaited' - 
+lib\pages\digital_repository_screen.dart:265:19 - unawaited_futures
+admin_module\analyze_output2.txt:1097:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:268:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1098:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:274:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1099:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:285:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1100:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:286:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1101:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:288:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1102:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:289:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1103:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:291:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1104:   info - Missing an 'await' for the 'Future' computed by this expression. 
+Try adding an 'await' or wrapping the expression with 'unawaited' - 
+lib\pages\digital_repository_screen.dart:292:11 - unawaited_futures
+admin_module\analyze_output2.txt:1105:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:299:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1106:   info - Statement should be on a separate line. Try moving the statement 
+to a new line - lib\pages\digital_repository_screen.dart:300:42 - always_put_control_body_on_new_line
+admin_module\analyze_output2.txt:1107:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:300:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1108:   info - Missing an 'await' for the 'Future' computed by this expression. 
+Try adding an 'await' or wrapping the expression with 'unawaited' - 
+lib\pages\digital_repository_screen.dart:300:119 - unawaited_futures
+admin_module\analyze_output2.txt:1109:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:313:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1110:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:324:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1111:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:326:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1112:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:333:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1113:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:339:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1114:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:344:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1115:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:345:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1116:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:360:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1117:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:362:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1118:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:372:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1119:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:382:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1120:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:383:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1121:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:394:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1122:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:400:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1123:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:401:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1124:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:406:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1125:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:408:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1126:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:410:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1127:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:412:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1128:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:421:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1129:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:423:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1130:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:429:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1131:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:431:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1132:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:441:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1133:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:444:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1134:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:445:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1135:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:449:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1136:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:451:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1137:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:453:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1138:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:454:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1139:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:455:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1140:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:457:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1141:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:458:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1142:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:460:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1143:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:469:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1144:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:471:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1145:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:474:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1146:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:481:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:1147:   info - The line length exceeds the 80-character limit. Try breaking the 
+line across multiple lines - lib\pages\digital_repository_screen.dart:483:81 - lines_longer_than_80_chars
+admin_module\analyze_output2.txt:2740:2648 issues found. (ran in 14.0s)
+
+

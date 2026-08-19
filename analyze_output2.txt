@@ -1,10 +1,4 @@
-﻿
-ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
-Γöé A new version of Flutter is available!                  Γöé
-Γöé                                                         Γöé
-Γöé To update to the latest version, run "flutter upgrade". Γöé
-ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
-Resolving dependencies...
+﻿Resolving dependencies...
 Downloading packages...
   _flutterfire_internals 1.3.59 (1.3.76 available)
   cloud_firestore 5.6.12 (6.8.0 available)
@@ -34,9 +28,9 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 flutter : Package file_picker:linux references file_picker:linux as the default plugin, but it does not provide 
 an inline implementation.
-At line:1 char:18
-+ cd admin_module; flutter analyze 2>&1 | Out-File -FilePath analyze_ou ...
-+                  ~~~~~~~~~~~~~~~~~~~~
+At line:1 char:28
++ Set-Location admin_module; flutter analyze 2>&1 | Out-File -FilePath  ...
++                            ~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (Package file_pi...implementation.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
@@ -1065,91 +1059,92 @@ warning - The value of the field '_selectedYearRecord' isn't used. Try removing 
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\department_list_screen.dart:629:81 - lines_longer_than_80_chars
    info - Sort directive sections alphabetically. Try sorting the directives - lib\pages\digital_repository_screen.dart:2:1 - directives_ordering
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:8:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:24:81 - lines_longer_than_80_chars
-   info - Statement should be on a separate line. Try moving the statement to a new line - lib\pages\digital_repository_screen.dart:25:18 - always_put_control_body_on_new_line
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:25:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:28:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:42:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:47:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:57:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:69:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:77:81 - lines_longer_than_80_chars
-   info - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch' - lib\pages\digital_repository_screen.dart:83:25 - avoid_catches_without_on_clauses
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:91:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:94:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:103:81 - lines_longer_than_80_chars
+   info - Statement should be on a separate line. Try moving the statement to a new line - lib\pages\digital_repository_screen.dart:26:18 - always_put_control_body_on_new_line
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:26:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:38:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:55:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:60:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:70:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:82:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:90:81 - lines_longer_than_80_chars
+   info - Catch clause should use 'on' to specify the type of exception being caught. Try adding an 'on' clause before the 'catch' - lib\pages\digital_repository_screen.dart:96:25 - avoid_catches_without_on_clauses
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:104:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:107:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:108:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:118:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:122:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:129:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:130:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:116:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:120:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:121:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:131:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:136:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:148:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:160:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:171:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:174:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:135:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:142:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:143:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:144:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:149:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:161:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:173:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:184:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:187:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:190:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:204:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:220:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:221:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:228:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:238:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:243:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:245:81 - lines_longer_than_80_chars
-   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:252:19 - unawaited_futures
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:255:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:261:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:272:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:273:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:275:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:276:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:278:81 - lines_longer_than_80_chars
-   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:279:11 - unawaited_futures
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:200:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:203:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:217:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:233:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:234:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:241:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:251:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:256:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:258:81 - lines_longer_than_80_chars
+   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:265:19 - unawaited_futures
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:268:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:274:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:285:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:286:81 - lines_longer_than_80_chars
-   info - Statement should be on a separate line. Try moving the statement to a new line - lib\pages\digital_repository_screen.dart:287:42 - always_put_control_body_on_new_line
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:287:81 - lines_longer_than_80_chars
-   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:287:119 - unawaited_futures
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:288:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:289:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:291:81 - lines_longer_than_80_chars
+   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:292:11 - unawaited_futures
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:299:81 - lines_longer_than_80_chars
+   info - Statement should be on a separate line. Try moving the statement to a new line - lib\pages\digital_repository_screen.dart:300:42 - always_put_control_body_on_new_line
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:300:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:311:81 - lines_longer_than_80_chars
+   info - Missing an 'await' for the 'Future' computed by this expression. Try adding an 'await' or wrapping the expression with 'unawaited' - lib\pages\digital_repository_screen.dart:300:119 - unawaited_futures
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:313:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:320:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:324:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:326:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:331:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:332:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:347:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:349:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:359:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:369:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:370:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:381:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:387:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:388:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:393:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:395:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:397:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:399:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:333:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:339:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:344:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:345:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:360:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:362:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:372:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:382:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:383:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:394:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:400:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:401:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:406:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:408:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:410:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:416:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:418:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:428:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:412:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:421:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:423:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:429:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:431:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:432:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:436:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:438:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:440:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:441:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:442:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:444:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:445:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:447:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:449:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:451:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:453:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:454:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:455:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:457:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:458:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:461:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:468:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:470:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:460:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:469:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:471:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:474:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:481:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\digital_repository_screen.dart:483:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\event_management_screen.dart:41:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\event_management_screen.dart:47:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\event_management_screen.dart:55:81 - lines_longer_than_80_chars
@@ -1583,13 +1578,11 @@ warning - The value of the field '_selectedYearRecord' isn't used. Try removing 
    info - Closure should be a tearoff. Try using a tearoff rather than a closure - lib\pages\my_profile_screen.dart:456:28 - unnecessary_lambdas
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:461:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:462:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:472:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:473:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:488:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:515:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:537:81 - lines_longer_than_80_chars
-   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:539:81 - lines_longer_than_80_chars
-   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre. Try replacing the use of the deprecated member with the replacement - lib\pages\my_profile_screen.dart:546:13 - deprecated_member_use
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:477:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:504:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:526:81 - lines_longer_than_80_chars
+   info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\my_profile_screen.dart:528:81 - lines_longer_than_80_chars
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre. Try replacing the use of the deprecated member with the replacement - lib\pages\my_profile_screen.dart:535:13 - deprecated_member_use
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\notification_config_screen.dart:10:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\notification_config_screen.dart:35:81 - lines_longer_than_80_chars
    info - The line length exceeds the 80-character limit. Try breaking the line across multiple lines - lib\pages\notification_config_screen.dart:47:81 - lines_longer_than_80_chars
@@ -2744,4 +2737,4 @@ warning - Unnecessary cast. Try removing the cast - lib\widgets\app_scaffold.dar
    info - Dependencies not sorted alphabetically. Try sorting the dependencies alphabetically (A to Z) - pubspec.yaml:14:3 - sort_pub_dependencies
    info - Dependencies not sorted alphabetically. Try sorting the dependencies alphabetically (A to Z) - pubspec.yaml:60:3 - sort_pub_dependencies
 
-2649 issues found. (ran in 10.0s)
+2648 issues found. (ran in 14.0s)

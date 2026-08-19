@@ -24,45 +24,6 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
 
   List<Map<String, dynamic>> get _filtered => _filter == 'All' ? _requests : _requests.where((r) => (r['status'] ?? 'Pending').toLowerCase() == _filter.toLowerCase()).toList();
 
-  void _showAddModal() {
-    final titleCtrl = TextEditingController();
-    final reqCtrl = TextEditingController();
-    final sumCtrl = TextEditingController();
-    var category = 'academic';
-    var priority = 'normal';
-
-    showDialog(context: context, builder: (ctx) => StatefulBuilder(builder: (ctx, ss) => AlertDialog(
-      title: const Text('New Approval Request', style: TextStyle(fontWeight: FontWeight.bold)),
-      content: SizedBox(width: 480, child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: titleCtrl, decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
-        const SizedBox(height: 12),
-        TextField(controller: reqCtrl, decoration: const InputDecoration(labelText: 'Requester Name', border: OutlineInputBorder())),
-        const SizedBox(height: 12),
-        TextField(controller: sumCtrl, maxLines: 3, decoration: const InputDecoration(labelText: 'Summary', border: OutlineInputBorder())),
-        const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: DropdownButtonFormField<String>(initialValue: category, isExpanded: true, decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()), items: ['academic','event','financial','administrative'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(), onChanged: (v) => ss(() => category = v!))),
-          const SizedBox(width: 12),
-          Expanded(child: DropdownButtonFormField<String>(initialValue: priority, isExpanded: true, decoration: const InputDecoration(labelText: 'Priority', border: OutlineInputBorder()), items: ['low','normal','high','urgent'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(), onChanged: (v) => ss(() => priority = v!))),
-        ]),
-      ]))),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-        ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white), onPressed: () async {
-          Navigator.pop(ctx);
-          await AdminSupabaseService.addApprovalRequest({
-            'request_title': titleCtrl.text.trim().isNotEmpty ? titleCtrl.text.trim() : 'New Request',
-            'requested_by': reqCtrl.text.trim().isNotEmpty ? reqCtrl.text.trim() : 'Admin',
-            'module': category,
-            'status': 'Pending',
-            'submitted_date': DateTime.now().toIso8601String(),
-          });
-          _loadData();
-        }, child: const Text('Submit')),
-      ],
-    )));
-  }
-
   Future<void> _updateDecision(Map<String, dynamic> req, String decision) async {
     if (req['id'] != null) {
       await AdminSupabaseService.updateApprovalRequest(req['id'].toString(), {'status': decision});
@@ -89,8 +50,6 @@ class _ApprovalWorkflowScreenState extends ConsumerState<ApprovalWorkflowScreen>
           ]),
           Row(children: [
             ElevatedButton.icon(onPressed: _loadData, icon: const Icon(Icons.refresh_rounded, size: 18), label: const Text('Refresh'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE2E8F0), foregroundColor: const Color(0xFF334155), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
-            const SizedBox(width: 12),
-            ElevatedButton.icon(onPressed: _showAddModal, icon: const Icon(Icons.add_rounded, size: 18), label: const Text('New Request'), style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0052CC), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
           ]),
         ]),
         const SizedBox(height: 20),

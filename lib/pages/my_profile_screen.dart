@@ -463,17 +463,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> with SingleTickerProv
                   side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.phonelink_erase_rounded, size: 20),
-                label: const Text('Sign Out All Devices'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFEF4444),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
-                ),
-              ),
             ],
           )
         ],
