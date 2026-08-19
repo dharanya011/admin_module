@@ -546,12 +546,7 @@ class _GlobalSearchDialogState extends State<_GlobalSearchDialog> {
       'icon': Icons.assignment_rounded,
       'route': RouteNames.examinations,
     },
-    {
-      'title': 'Hall Ticket Management',
-      'category': 'Academic Operations',
-      'icon': Icons.confirmation_number_rounded,
-      'route': RouteNames.hallTicket,
-    },
+
     {
       'title': 'Results Management',
       'category': 'Academic Operations',

@@ -14,7 +14,7 @@ import '../pages/digital_repository_screen.dart';
 import '../pages/event_management_screen.dart';
 import '../pages/examination_management_screen.dart';
 import '../pages/grievance_management_screen.dart';
-import '../pages/hall_ticket_screen.dart';
+
 import '../pages/hostel_management_screen.dart';
 import '../pages/hr_payroll_screen.dart';
 import '../pages/inventory_assets_screen.dart';
@@ -133,8 +133,8 @@ final router = GoRouter(
           builder: (context, state) => const ExaminationManagementScreen(),
         ),
         GoRoute(
-          path: RouteNames.hallTicket,
-          builder: (context, state) => const HallTicketScreen(),
+          path: '/admin/hall-ticket',
+          redirect: (context, state) => RouteNames.examinations,
         ),
         GoRoute(
           path: RouteNames.results,

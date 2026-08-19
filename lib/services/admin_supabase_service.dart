@@ -487,15 +487,7 @@ class AdminSupabaseService {
     }
   }
 
-  /// Fetch hall ticket status records.
-  static Future<List<Map<String, dynamic>>> fetchHallTicketStatus() async {
-    try {
-      return await SupabaseService.instance.fetchTable('hall_tickets');
-    } catch (e) {
-      print('Error fetching hall ticket status: $e');
-      return [];
-    }
-  }
+
 
   /// Fetch admin users.
   static Future<List<Map<String, dynamic>>> fetchAdminUsers() async {
@@ -504,31 +496,6 @@ class AdminSupabaseService {
     } catch (e) {
       print('Error fetching admin users: $e');
       return [];
-    }
-  }
-
-  /// Add a hall ticket record.
-  static Future<Map<String, dynamic>?> addHallTicket(
-    Map<String, dynamic> data,
-  ) async {
-    try {
-      return await SupabaseService.instance.insertData('hall_tickets', data);
-    } catch (e) {
-      print('Error adding hall ticket: $e');
-      return null;
-    }
-  }
-
-  /// Add multiple hall ticket records in a batch.
-  static Future<void> addHallTicketsInBatch(
-    List<Map<String, dynamic>> data,
-  ) async {
-    if (data.isEmpty) return;
-    try {
-      await SupabaseService.instance.client.from('hall_tickets').insert(data);
-    } catch (e) {
-      print('Error adding hall tickets in batch: $e');
-      // Optionally rethrow or handle error
     }
   }
 

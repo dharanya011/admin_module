@@ -85,8 +85,6 @@ class RouteNames {
   static const String marks = '/admin/marks'; // 12. Marks Management
   static const String examinations =
       '/admin/examinations'; // 13. Examination Management
-  static const String hallTicket =
-      '/admin/hall-ticket'; // 14. Hall Ticket Management
   static const String results = '/admin/results'; // 15. Results Management
   static const String certificates =
       '/admin/certificates'; // 16. Certificates Management

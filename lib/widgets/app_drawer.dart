@@ -323,11 +323,7 @@ class AppDrawer extends StatelessWidget {
                         title: 'Examination Management',
                         icon: Icons.assignment_rounded,
                         routePath: RouteNames.examinations),
-                    _buildSubNavItem(
-                        context: context,
-                        title: 'Hall Ticket Management',
-                        icon: Icons.confirmation_number_rounded,
-                        routePath: RouteNames.hallTicket),
+
                     _buildSubNavItem(
                         context: context,
                         title: 'Results Management',
