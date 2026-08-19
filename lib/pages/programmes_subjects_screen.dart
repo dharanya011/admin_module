@@ -386,20 +386,32 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: status,
-                          decoration: const InputDecoration(
-                            labelText: 'Status',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ['Active', 'Inactive', 'Archived']
-                              .map(
-                                (s) =>
-                                    DropdownMenuItem(value: s, child: Text(s)),
+                        child: isEdit
+                            ? DropdownButtonFormField<String>(
+                                value: status,
+                                decoration: const InputDecoration(
+                                  labelText: 'Status',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: ['Active', 'Inactive', 'Archived']
+                                    .map(
+                                      (s) =>
+                                          DropdownMenuItem(value: s, child: Text(s)),
+                                    )
+                                    .toList(),
+                                onChanged: (v) =>
+                                    setModalState(() => status = v!),
                               )
-                              .toList(),
-                          onChanged: (v) => setModalState(() => status = v!),
-                        ),
+                            : TextFormField(
+                                initialValue: 'Active',
+                                enabled: false,
+                                decoration: const InputDecoration(
+                                  labelText: 'Status',
+                                  filled: true,
+                                  fillColor: Color(0xFFF1F5F9),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -2769,8 +2781,8 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                             icon: const Icon(Icons.add_rounded, size: 18),
                             label: Text(
                               _tabController.index == 0
-                                  ? '+ Add Programme'
-                                  : '+ Add Subject',
+                                  ? 'Add Programme'
+                                  : 'Add Subject',
                             ),
                           ),
                         ],
@@ -2832,8 +2844,8 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                             icon: const Icon(Icons.add_rounded, size: 18),
                             label: Text(
                               _tabController.index == 0
-                                  ? '+ Add Programme'
-                                  : '+ Add Subject',
+                                  ? 'Add Programme'
+                                  : 'Add Subject',
                             ),
                           ),
                         ],
