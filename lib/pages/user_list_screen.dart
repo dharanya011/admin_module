@@ -177,7 +177,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                                 enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                               ),
-                              items: ['Active', 'Pending', 'Inactive'].map((status) {
+                              items: ['Active', 'Freeze'].map((status) {
                                 return DropdownMenuItem(value: status, child: Text(status));
                               }).toList(),
                               onChanged: (val) {
@@ -284,7 +284,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
     var selectedStatus = user.status;
 
     final rolesList = ['Student', 'Faculty', 'Department HOD', 'Registrar', 'Admin'];
-    final statusList = ['Active', 'Pending', 'Inactive'];
+    final statusList = ['Active', 'Freeze'];
     final deptList = ['Computer Science', 'Information Technology', 'Electronics & Comm.', 'Mechanical Engg.', 'Civil Engg.', 'Administration', 'CSE', 'ECE', 'IT', 'MECH', 'CIVIL'];
 
     if (!rolesList.contains(selectedRole)) rolesList.add(selectedRole);
@@ -987,7 +987,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                                             ),
-                                            items: ['All', 'Active', 'Pending', 'Inactive'].map((status) => DropdownMenuItem(value: status, child: Text('Status: $status', style: const TextStyle(fontSize: 11)))).toList(),
+                                            items: ['All', 'Active', 'Freeze'].map((status) => DropdownMenuItem(value: status, child: Text('Status: $status', style: const TextStyle(fontSize: 11)))).toList(),
                                             onChanged: (val) {
                                               if (val != null) {
                                                 setState(() {
@@ -1077,7 +1077,7 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                                       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                                     ),
-                                    items: ['All', 'Active', 'Pending', 'Inactive'].map((status) => DropdownMenuItem(value: status, child: Text(status, style: const TextStyle(fontSize: 13)))).toList(),
+                                    items: ['All', 'Active', 'Freeze'].map((status) => DropdownMenuItem(value: status, child: Text(status, style: const TextStyle(fontSize: 13)))).toList(),
                                     onChanged: (val) {
                                       if (val != null) {
                                         setState(() {
@@ -1281,11 +1281,12 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                                   icon: const Icon(Icons.visibility_outlined, size: 18, color: Color(0xFF0052CC)),
                                   onPressed: () => context.go('${RouteNames.users}/${user.id}'),
                                 ),
-                                IconButton(
-                                  tooltip: 'Quick Edit User Details',
-                                  icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0284C7)),
-                                  onPressed: () => _showQuickEditModal(user),
-                                ),
+                                if (user.status != 'Freeze' && user.status != 'Frozen')
+                                  IconButton(
+                                    tooltip: 'Quick Edit User Details',
+                                    icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0284C7)),
+                                    onPressed: () => _showQuickEditModal(user),
+                                  ),
                                 IconButton(
                                   tooltip: 'Delete User Account',
                                   icon: const Icon(Icons.delete_outline_rounded, size: 18, color: Color(0xFFDC2626)),
@@ -1422,13 +1423,14 @@ class _UserListScreenState extends ConsumerState<UserListScreen> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                            padding: EdgeInsets.zero,
-                            tooltip: 'Quick Edit User Details',
-                            icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0284C7)),
-                            onPressed: () => _showQuickEditModal(user),
-                          ),
+                          if (user.status != 'Freeze' && user.status != 'Frozen')
+                            IconButton(
+                              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                              padding: EdgeInsets.zero,
+                              tooltip: 'Quick Edit User Details',
+                              icon: const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0284C7)),
+                              onPressed: () => _showQuickEditModal(user),
+                            ),
                           IconButton(
                             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                             padding: EdgeInsets.zero,

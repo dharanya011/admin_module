@@ -70,12 +70,13 @@ class UserDetailScreen extends ConsumerWidget {
           onPressed: () => context.go(RouteNames.users),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_rounded),
-            tooltip: 'Edit',
-            onPressed: () =>
-                context.go('${RouteNames.users}/${user.id}/edit'),
-          ),
+          if (user.status != 'Freeze' && user.status != 'Frozen')
+            IconButton(
+              icon: const Icon(Icons.edit_rounded),
+              tooltip: 'Edit',
+              onPressed: () =>
+                  context.go('${RouteNames.users}/${user.id}/edit'),
+            ),
         ],
       ),
       body: SafeArea(
@@ -261,16 +262,18 @@ class UserDetailScreen extends ConsumerWidget {
               // Action buttons
               Row(
                 children: [
-                  Expanded(
-                    child: AppButton(
-                      label: 'Edit Record',
-                      type: AppButtonType.secondary,
-                      icon: Icons.edit_rounded,
-                      onPressed: () =>
-                          context.go('${RouteNames.users}/${user.id}/edit'),
+                  if (user.status != 'Freeze' && user.status != 'Frozen') ...[
+                    Expanded(
+                      child: AppButton(
+                        label: 'Edit Record',
+                        type: AppButtonType.secondary,
+                        icon: Icons.edit_rounded,
+                        onPressed: () =>
+                            context.go('${RouteNames.users}/${user.id}/edit'),
+                      ),
                     ),
-                  ),
-                  AppSpacing.gapMd,
+                    AppSpacing.gapMd,
+                  ],
                   Expanded(
                     child: AppButton(
                       label: user.status == 'Inactive'

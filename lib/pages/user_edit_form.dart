@@ -53,7 +53,7 @@ class _UserEditFormState extends ConsumerState<UserEditForm> with SingleTickerPr
 
   static const List<String> _roles = ['Student', 'Faculty', 'Department HOD', 'Registrar', 'Admin'];
   static const List<String> _departments = ['CSE', 'ECE', 'MECH', 'EEE', 'CIVIL', 'IT', 'Computer Science', 'Information Technology', 'Mechanical Engineering', 'Civil Engineering', 'Administration', 'ALL'];
-  static const List<String> _statuses = ['Active', 'Pending', 'Inactive'];
+  static const List<String> _statuses = ['Active', 'Freeze'];
   static const List<String> _genders = ['Male', 'Female', 'Other'];
   static const List<String> _communities = ['OC', 'BC', 'MBC', 'SC', 'ST'];
   static const List<String> _sections = ['A', 'B', 'C', 'D', 'E'];
@@ -112,6 +112,20 @@ class _UserEditFormState extends ConsumerState<UserEditForm> with SingleTickerPr
     _emailController.text = user.email;
     _role = user.role;
     _department = user.department;
+    if (user.status == 'Freeze' || user.status == 'Frozen') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Frozen users cannot be edited.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          context.go(RouteNames.users);
+        }
+      });
+      return;
+    }
     _status = user.status;
     _admissionNumberController.text = user.admissionNumber ?? '';
     _admissionDateController.text = user.admissionDate ?? '';
