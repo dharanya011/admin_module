@@ -32,6 +32,53 @@ class _ExaminationManagementScreenState extends State<ExaminationManagementScree
     if (mounted) setState(() { _exams = data; _loading = false; });
   }
 
+  String _autoGenerateSubjectCode(String subjectName, String semesterStr) {
+    final trimmed = subjectName.trim();
+    if (trimmed.isEmpty) return '';
+
+    // 1. Reuse existing subject code if a subject with the same name exists
+    for (final ex in _exams) {
+      final existingName = (ex['exam_name'] ?? ex['subject_name'])?.toString().trim();
+      final existingCode = ex['subject_code']?.toString().trim();
+      if (existingName != null &&
+          existingCode != null &&
+          existingCode.isNotEmpty &&
+          existingName.toLowerCase() == trimmed.toLowerCase()) {
+        return existingCode;
+      }
+    }
+
+    // 2. Generate new unique subject code from initials / name
+    final words = trimmed.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    String baseCode;
+    if (words.length >= 2) {
+      baseCode = words.map((w) => w[0].toUpperCase()).join();
+    } else if (trimmed.length >= 3) {
+      baseCode = trimmed.substring(0, 3).toUpperCase();
+    } else {
+      baseCode = trimmed.toUpperCase();
+    }
+
+    // Extract semester digit (e.g. "Semester 6" -> "6")
+    final semNum = semesterStr.replaceAll(RegExp(r'[^0-9]'), '');
+    final semDigit = semNum.isNotEmpty ? semNum : '1';
+
+    // Check existing codes to prevent duplicates
+    final existingCodes = _exams
+        .map((e) => e['subject_code']?.toString().trim().toUpperCase())
+        .whereType<String>()
+        .toSet();
+
+    String generated = '$baseCode${semDigit}01';
+    int counter = 1;
+    while (existingCodes.contains(generated.toUpperCase())) {
+      counter++;
+      generated = '$baseCode$semDigit${counter.toString().padLeft(2, '0')}';
+    }
+
+    return generated;
+  }
+
   void _showAddEditModal([Map<String, dynamic>? ex]) {
     final scCtrl = TextEditingController(text: ex?['subject_code']?.toString() ?? '');
     final snCtrl = TextEditingController(text: ex?['exam_name']?.toString() ?? ex?['subject_name']?.toString() ?? '');
@@ -64,9 +111,37 @@ class _ExaminationManagementScreenState extends State<ExaminationManagementScree
                 children: [
                   Row(
                     children: [
-                      Expanded(child: TextField(controller: scCtrl, decoration: const InputDecoration(labelText: 'Subject Code', border: OutlineInputBorder()))),
+                      Expanded(
+                        child: TextField(
+                          controller: snCtrl,
+                          onChanged: (val) {
+                            if (ex == null) {
+                              ss(() {
+                                scCtrl.text = _autoGenerateSubjectCode(val, sem);
+                              });
+                            }
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Exam / Subject Name *',
+                            hintText: 'e.g. Database Management Systems',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: 12),
-                      Expanded(child: TextField(controller: snCtrl, decoration: const InputDecoration(labelText: 'Exam / Subject Name', border: OutlineInputBorder()))),
+                      Expanded(
+                        child: TextField(
+                          controller: scCtrl,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Subject Code (Auto-generated)',
+                            filled: true,
+                            fillColor: Color(0xFFF1F5F9),
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.auto_awesome_rounded, size: 18, color: Color(0xFF0052CC)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -80,7 +155,12 @@ class _ExaminationManagementScreenState extends State<ExaminationManagementScree
                           items: ['Semester 1','Semester 2','Semester 3','Semester 4','Semester 5','Semester 6','Semester 7','Semester 8']
                               .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                               .toList(),
-                          onChanged: (v) => ss(() => sem = v!),
+                          onChanged: (v) => ss(() {
+                            sem = v!;
+                            if (ex == null && snCtrl.text.isNotEmpty) {
+                              scCtrl.text = _autoGenerateSubjectCode(snCtrl.text, sem);
+                            }
+                          }),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -131,9 +211,12 @@ class _ExaminationManagementScreenState extends State<ExaminationManagementScree
                 Navigator.pop(ctx);
                 final dateVal = dateCtrl.text.trim().isNotEmpty ? dateCtrl.text.trim() : DateTime.now().toIso8601String().split('T')[0];
                 final semNum = int.tryParse(sem.replaceAll(RegExp(r'[^0-9]'), '')) ?? 1;
+                final generatedCode = scCtrl.text.trim().isNotEmpty
+                    ? scCtrl.text.trim()
+                    : _autoGenerateSubjectCode(snCtrl.text, sem);
                 final payload = {
                   'exam_name': snCtrl.text.trim().isNotEmpty ? snCtrl.text.trim() : 'General Exam',
-                  'subject_code': scCtrl.text.trim().isNotEmpty ? scCtrl.text.trim() : 'CS101',
+                  'subject_code': generatedCode.isNotEmpty ? generatedCode : 'SUB101',
                   'date': dateVal,
                   'time_slot': sess,
                   'venue': hallCtrl.text.trim().isNotEmpty ? hallCtrl.text.trim() : 'Hall A',
