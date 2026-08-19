@@ -481,44 +481,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : 10.0;
                 final maxY = (maxCount + (maxCount * 0.25)).clamp(5.0, 10000.0);
 
-                return BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
+                final spots = <FlSpot>[
+                  for (var i = 0; i < displayYears.length; i++)
+                    FlSpot(i.toDouble(), (yearCounts[displayYears[i]] ?? 0).toDouble()),
+                ];
+
+                return LineChart(
+                  LineChartData(
+                    minX: 0,
+                    maxX: (displayYears.length - 1).toDouble(),
+                    minY: 0,
                     maxY: maxY,
-                    barTouchData: BarTouchData(
+                    lineTouchData: LineTouchData(
                       enabled: true,
-                      touchTooltipData: BarTouchTooltipData(
+                      touchTooltipData: LineTouchTooltipData(
                         getTooltipColor: (_) => const Color(0xFF0F172A),
-                        getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                          final year = displayYears[group.x.toInt()];
-                          final count = rod.toY.toInt();
-                          return BarTooltipItem(
-                            '$year: $count Students',
-                            const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                          );
+                        getTooltipItems: (touchedSpots) {
+                          return touchedSpots.map((spot) {
+                            final idx = spot.x.toInt();
+                            if (idx >= 0 && idx < displayYears.length) {
+                              return LineTooltipItem(
+                                '${displayYears[idx]}: ${spot.y.toInt()} students',
+                                const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                ),
+                              );
+                            }
+                            return null;
+                          }).whereType<LineTooltipItem>().toList();
                         },
                       ),
                     ),
                     titlesData: FlTitlesData(
-                      topTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      rightTitles: const AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
+                      show: true,
+                      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: 28,
+                          reservedSize: 30,
+                          interval: 1,
                           getTitlesWidget: (v, meta) {
                             final idx = v.toInt();
-                            if (idx >= 0 && idx < displayYears.length) {
+                            if (v == idx.toDouble() && idx >= 0 && idx < displayYears.length) {
                               return Padding(
-                                padding: const EdgeInsets.only(top: 6),
+                                padding: const EdgeInsets.only(top: 8),
                                 child: Text(
                                   '${displayYears[idx]}',
                                   style: const TextStyle(
@@ -536,7 +545,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       leftTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
-                          reservedSize: 32,
+                          reservedSize: 36,
                           getTitlesWidget: (v, meta) {
                             if (v == v.toInt()) {
                               return Text(
@@ -559,25 +568,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           const FlLine(color: Color(0xFFF1F5F9), strokeWidth: 1),
                     ),
                     borderData: FlBorderData(show: false),
-                    barGroups: [
-                      for (var i = 0; i < displayYears.length; i++)
-                        BarChartGroupData(
-                          x: i,
-                          barRods: [
-                            BarChartRodData(
-                              toY: (yearCounts[displayYears[i]] ?? 0).toDouble(),
-                              color: const Color(0xFF0052CC),
-                              width: displayYears.length > 8 ? 12 : 18,
-                              borderRadius:
-                                  const BorderRadius.vertical(top: Radius.circular(5)),
-                              backDrawRodData: BackgroundBarChartRodData(
-                                show: true,
-                                toY: maxY,
-                                color: const Color(0xFFF1F5F9),
-                              ),
-                            ),
-                          ],
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: spots,
+                        isCurved: true,
+                        curveSmoothness: 0.35,
+                        color: const Color(0xFF0052CC),
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) =>
+                              FlDotCirclePainter(
+                            radius: 5,
+                            color: const Color(0xFF0052CC),
+                            strokeWidth: 2.5,
+                            strokeColor: Colors.white,
+                          ),
                         ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          color: const Color(0xFF0052CC).withValues(alpha: 0.08),
+                        ),
+                      ),
                     ],
                   ),
                 );
