@@ -84,10 +84,62 @@ class _DepartmentListScreenState extends ConsumerState<DepartmentListScreen> {
     super.dispose();
   }
 
+  String _deriveCode(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('computer science')) return 'CSE';
+    if (lower.contains('information tech')) return 'IT';
+    if (lower.contains('electronics & comm') || lower.contains('ece')) return 'ECE';
+    if (lower.contains('electrical & elec') || lower.contains('eee')) return 'EEE';
+    if (lower.contains('mechanical')) return 'MECH';
+    if (lower.contains('civil')) return 'CIVIL';
+    if (lower.contains('artificial intelligence') || lower.contains('ai')) return 'AI&DS';
+    if (lower.contains('business admin') || lower.contains('mba')) return 'MBA';
+    if (lower.contains('computer app') || lower.contains('mca')) return 'MCA';
+    final words = name.split(RegExp(r'\s+')).where((w) => w.length >= 2).toList();
+    if (words.isNotEmpty) return words.map((w) => w[0].toUpperCase()).join();
+    return name.substring(0, name.length.clamp(0, 4)).toUpperCase();
+  }
+
   void _showAddDepartmentSheet() {
-    _nameController.clear();
-    _codeController.clear();
-    _hodController.clear();
+    final existingDepts = ref.read(departmentsProvider);
+
+    final defaultDeptNames = [
+      'Computer Science & Engineering',
+      'Information Technology',
+      'Electronics & Communication Engineering',
+      'Electrical & Electronics Engineering',
+      'Mechanical Engineering',
+      'Civil Engineering',
+      'Artificial Intelligence & Data Science',
+      'Master of Business Administration',
+      'Master of Computer Applications',
+    ];
+
+    final defaultHods = [
+      'Dr. Suresh Kumar',
+      'Dr. R. Sundaram',
+      'Dr. M. K. Ananth',
+      'Dr. P. Ramesh',
+      'Dr. K. Vijayakumar',
+      'Dr. S. Mohan',
+      'Dr. V. Lakshmi',
+      'Dr. N. Rajendran',
+      'Dr. Head of Dept',
+    ];
+
+    final deptOptions = <String>{
+      ...existingDepts.map((d) => d.name).where((n) => n.trim().isNotEmpty),
+      ...defaultDeptNames,
+    }.toList();
+
+    final hodOptions = <String>{
+      ...existingDepts.map((d) => d.hod).where((h) => h.trim().isNotEmpty && h != 'HOD'),
+      ...defaultHods,
+    }.toList();
+
+    _nameController.text = deptOptions.first;
+    _codeController.text = _deriveCode(deptOptions.first);
+    _hodController.text = hodOptions.first;
     _capacityController.clear();
     _status = 'Active';
 
@@ -125,38 +177,69 @@ class _DepartmentListScreenState extends ConsumerState<DepartmentListScreen> {
                       ),
                       const Divider(),
                       AppSpacing.gapMd,
-                      AppTextField(
-                        label: 'Department Name',
-                        hintText: 'Computer Science & Engineering',
-                        controller: _nameController,
-                        validator: (val) => val == null || val.isEmpty ? 'Name is required' : null,
+                      Text('Department Name *', style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary)),
+                      AppSpacing.gapXs,
+                      DropdownButtonFormField<String>(
+                        value: deptOptions.contains(_nameController.text) ? _nameController.text : deptOptions.first,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        ),
+                        items: deptOptions.map((name) {
+                          return DropdownMenuItem(value: name, child: Text(name));
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setSheetState(() {
+                              _nameController.text = val;
+                              _codeController.text = _deriveCode(val);
+                            });
+                          }
+                        },
+                        validator: (val) => val == null || val.isEmpty ? 'Department Name is required' : null,
                       ),
                       AppSpacing.gapMd,
                       AppTextField(
                         label: 'Dept Code',
                         hintText: 'CSE',
+                        enabled: false,
                         controller: _codeController,
                         validator: (val) => val == null || val.isEmpty ? 'Code is required' : null,
                       ),
                       AppSpacing.gapMd,
-                      AppTextField(
-                        label: 'Department Head (HOD)',
-                        hintText: 'Dr. Suresh Kumar',
-                        controller: _hodController,
+                      Text('Department Head (HOD) *', style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary)),
+                      AppSpacing.gapXs,
+                      DropdownButtonFormField<String>(
+                        value: hodOptions.contains(_hodController.text) ? _hodController.text : hodOptions.first,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        ),
+                        items: hodOptions.map((hod) {
+                          return DropdownMenuItem(value: hod, child: Text(hod));
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setSheetState(() {
+                              _hodController.text = val;
+                            });
+                          }
+                        },
                         validator: (val) => val == null || val.isEmpty ? 'HOD Name is required' : null,
                       ),
                       AppSpacing.gapMd,
                       Text('Cluster Status', style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary)),
                       AppSpacing.gapXs,
                       DropdownButtonFormField<String>(
-                        value: _status,
-                        decoration: const InputDecoration(),
-                        items: ['Active', 'Inactive'].map((status) {
-                          return DropdownMenuItem(value: status, child: Text(status));
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) setSheetState(() => _status = val);
-                        },
+                        value: 'Active',
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'Active', child: Text('Active')),
+                        ],
+                        onChanged: null,
                       ),
                       AppSpacing.gapLg,
                       AppButton(
@@ -169,7 +252,7 @@ class _DepartmentListScreenState extends ConsumerState<DepartmentListScreen> {
                               code: _codeController.text.toUpperCase(),
                               hod: _hodController.text.isNotEmpty ? _hodController.text : 'Dr. Head of Dept',
                               intakeCapacity: 60,
-                              status: _status,
+                              status: 'Active',
                             );
                             ref.read(departmentsProvider.notifier).addDepartment(newDept);
                             Navigator.of(context).pop();
