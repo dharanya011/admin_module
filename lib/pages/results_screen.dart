@@ -748,7 +748,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -768,8 +767,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(width: 24),
                       SizedBox(
-                        width: 280,
+                        width: 320,
                         child: TextField(
                           onChanged: (v) => setState(() => _searchQuery = v),
                           decoration: InputDecoration(
