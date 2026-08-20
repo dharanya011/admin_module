@@ -485,6 +485,68 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
     );
   }
 
+  // ── SUBJECT CODE AUTO-GENERATION ──────────────────────────────────────────
+  /// Generates a unique, consistent subject code from [title] and [type].
+  String _generateSubjectCode(String title, String type) {
+    // Extract meaningful words (skip short filler words)
+    final stopWords = {'and', 'or', 'of', 'the', 'in', 'to', 'for', 'a', 'an', 'with', 'on', 'at'};
+    final words = title
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty && !stopWords.contains(w.toLowerCase()))
+        .toList();
+
+    // Build initials from the title words
+    String initials = '';
+    if (words.length == 1) {
+      initials = words[0].substring(0, words[0].length.clamp(0, 4)).toUpperCase();
+    } else if (words.length == 2) {
+      initials = (words[0].substring(0, 2) + words[1].substring(0, 2)).toUpperCase();
+    } else {
+      initials = words.take(4).map((w) => w[0].toUpperCase()).join();
+    }
+
+    // Per-type prefix
+    final String prefix;
+    switch (type) {
+      case 'Professional Core':
+        prefix = 'PC';
+        break;
+      case 'Professional Elective':
+        prefix = 'PE';
+        break;
+      case 'Open Elective':
+        prefix = 'OE';
+        break;
+      case 'Laboratory':
+        prefix = 'LB';
+        break;
+      case 'Project':
+        prefix = 'PJ';
+        break;
+      case 'Seminar':
+        prefix = 'SE';
+        break;
+      case 'Value Added Course':
+        prefix = 'VA';
+        break;
+      case 'Core':
+      default:
+        prefix = 'CS';
+        break;
+    }
+
+    // Count how many existing codes already start with the same prefix+initials
+    // to append a numeric suffix for uniqueness
+    final baseCode = '${prefix}${initials}';
+    final existingCount = _subjects
+        .where((s) => (s['code'] ?? '').toString().toUpperCase().startsWith(baseCode))
+        .length;
+    final suffix = (existingCount + 1).toString().padLeft(2, '0');
+
+    return '${baseCode}${suffix}';
+  }
+
   // ── ADD / EDIT SUBJECT MODAL (COMPLETE WITH SECTIONS A - F) ─────────────────
   void _showAddEditSubjectModal([Map<String, dynamic>? existing]) {
     final isEdit = existing != null;
@@ -506,6 +568,11 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
         existing?['department']?.toString() ?? 'Computer Science & Engineering';
     var type = existing?['subject_type']?.toString() ?? 'Core';
     var status = existing?['status']?.toString() ?? 'Active';
+
+    // Auto-generate code on creation (pre-seed if title already filled)
+    if (!isEdit && titleCtrl.text.isNotEmpty) {
+      codeCtrl.text = _generateSubjectCode(titleCtrl.text, type);
+    }
 
     // Section B: Teaching & Credit Structure (L-T-P-C)
     final lCtrl = TextEditingController(
@@ -663,15 +730,23 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                                     Expanded(
                                       child: TextField(
                                         controller: codeCtrl,
-                                        enabled: !isEdit,
+                                        // Always read-only: auto-generated on create, fixed on edit
+                                        enabled: false,
                                         textCapitalization:
                                             TextCapitalization.characters,
-                                        decoration: const InputDecoration(
+                                        decoration: InputDecoration(
                                           labelText: 'Subject Code *',
-                                          hintText: 'e.g. CS8591',
-                                          border: OutlineInputBorder(),
-                                          helperText:
-                                              'Unique subject code (e.g. CS8591)',
+                                          hintText: isEdit ? '' : 'Auto-generated',
+                                          border: const OutlineInputBorder(),
+                                          helperText: isEdit
+                                              ? 'Code is fixed after creation'
+                                              : 'Auto-generated from Subject Name & Type',
+                                          filled: true,
+                                          fillColor: const Color(0xFFF8FAFC),
+                                          suffixIcon: const Tooltip(
+                                            message: 'Subject code is automatically generated based on the Subject Name and Type.',
+                                            child: Icon(Icons.auto_awesome_rounded, color: Color(0xFF0052CC), size: 18),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -692,6 +767,18 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                                 const SizedBox(height: 12),
                                 TextField(
                                   controller: titleCtrl,
+                                  onChanged: isEdit
+                                      ? null
+                                      : (val) {
+                                          // Auto-regenerate code whenever title changes (only on create)
+                                          if (val.trim().isNotEmpty) {
+                                            setModalState(() {
+                                              codeCtrl.text = _generateSubjectCode(val.trim(), type);
+                                            });
+                                          } else {
+                                            setModalState(() => codeCtrl.text = '');
+                                          }
+                                        },
                                   decoration: const InputDecoration(
                                     labelText: 'Subject Full Name / Title *',
                                     hintText: 'e.g. Computer Networks',
@@ -759,8 +846,15 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                                                   ),
                                                 )
                                                 .toList(),
-                                        onChanged: (v) =>
-                                            setModalState(() => type = v!),
+                                        onChanged: (v) {
+                                          setModalState(() {
+                                            type = v!;
+                                            // Regenerate code when type changes (only on create)
+                                            if (!isEdit && titleCtrl.text.trim().isNotEmpty) {
+                                              codeCtrl.text = _generateSubjectCode(titleCtrl.text.trim(), type);
+                                            }
+                                          });
+                                        },
                                       ),
                                     ),
                                   ],
@@ -775,7 +869,8 @@ class _ProgrammesSubjectsScreenState extends State<ProgrammesSubjectsScreen>
                                           labelText: 'Status',
                                           border: OutlineInputBorder(),
                                         ),
-                                        items: ['Active', 'Inactive']
+                                        // Inactive removed — only Active and Archived
+                                        items: ['Active', 'Archived']
                                             .map(
                                               (s) => DropdownMenuItem(
                                                 value: s,
