@@ -117,6 +117,9 @@ class _AcademicConfigScreenState extends ConsumerState<AcademicConfigScreen>
         text: existing?['end_date']?.toString() ?? '2026-05-20');
     var type = existing?['term_type']?.toString() ?? 'Even Semester';
     var status = existing?['status']?.toString() ?? 'Active';
+    if (status != 'Active' && status != 'Completed') {
+      status = 'Active';
+    }
 
     showDialog(
       context: context,
@@ -166,7 +169,7 @@ class _AcademicConfigScreenState extends ConsumerState<AcademicConfigScreen>
                         value: status,
                         decoration: const InputDecoration(
                             labelText: 'Status', border: OutlineInputBorder()),
-                        items: ['Active', 'Completed', 'Upcoming']
+                        items: ['Active', 'Completed']
                             .map((s) =>
                                 DropdownMenuItem(value: s, child: Text(s)))
                             .toList(),

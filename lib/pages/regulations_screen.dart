@@ -117,19 +117,6 @@ class _RegulationsScreenState extends ConsumerState<RegulationsScreen> {
                           ),
                         ],
                       ),
-                      AppSpacing.gapMd,
-                      Text('Activation Status', style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary)),
-                      AppSpacing.gapXs,
-                      DropdownButtonFormField<String>(
-                        value: _status,
-                        decoration: const InputDecoration(),
-                        items: ['Active', 'Inactive'].map((status) {
-                          return DropdownMenuItem(value: status, child: Text(status));
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) setSheetState(() => _status = val);
-                        },
-                      ),
                       AppSpacing.gapLg,
                       AppButton(
                         label: 'Initialize Regulation Schema',
